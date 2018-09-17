@@ -1,24 +1,26 @@
-package main
+package output
 
 import (
 	"fmt"
 	"os"
 )
 
-type pcapwirter struct {
+type pcapOutput struct {
 	fd *os.File
 }
 
-func (pw *pcapwirter) Init(fname string) (err error) {
+// NewPcapOutput constructs pcapOutput object
+func NewPcapOutput(fname string) Outputer {
 	fd, err := os.OpenFile(fname, os.O_RDWR, 0755)
 	if err != nil {
 		fmt.Println("Error opening file: ", err)
+		return nil
 	}
-	pw.fd = fd
-	return err
+
+	return &pcapOutput{fd}
 }
 
-func (pw pcapwirter) Write(p []byte) (n int, err error) {
+func (pw pcapOutput) Write(p []byte) (n int, err error) {
 	n, err = pw.fd.Write(p)
 	if err != nil {
 		fmt.Println("Error writing to file: ", err)
@@ -26,6 +28,6 @@ func (pw pcapwirter) Write(p []byte) (n int, err error) {
 	return n, err
 }
 
-func (pw *pcapwirter) DeInit() {
+func (pw *pcapOutput) Close() {
 	pw.fd.Close()
 }
