@@ -1,13 +1,22 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
+	"strings"
 
 	"golang.org/x/crypto/ssh"
+)
+
+const (
+	cmdErr  = iota
+	cmdOk   = iota
+	cmdExit = iota
 )
 
 func getTarget(fname string) (Target, error) {
@@ -82,7 +91,7 @@ func connect(t *Target) (*ssh.Client, error) {
 	return client, nil
 }
 
-func main() {
+func capture() {
 	t, err := getTarget("config.json")
 	if err != nil {
 		fmt.Println("Error loading configuration: ", err)
@@ -118,4 +127,29 @@ func main() {
 	}
 
 	session.Wait()
+}
+
+func processCmd(cmd string) int {
+	switch cmd {
+	case "exit":
+		return cmdExit
+
+	case "quit":
+		return cmdExit
+	}
+
+	return cmdErr
+}
+
+func main() {
+	reader := bufio.NewReader(os.Stdin)
+
+	for {
+		fmt.Print("rpcap> ")
+		command, _ := reader.ReadString('\n')
+
+		if processCmd(strings.TrimSuffix(command, "\n")) == cmdExit {
+			break
+		}
+	}
 }
