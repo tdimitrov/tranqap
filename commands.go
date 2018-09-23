@@ -17,26 +17,35 @@ func cmdStart() int {
 	// Get configuration
 	t, err := getTarget("config.json")
 	if err != nil {
-		fmt.Println("Error loading configuration: ", err)
+		fmt.Println("Error loading configuration. ", err)
 		return cmdErr
 	}
 
-	// Create SSH client config from configuration
-	c, err := getClientConfig(&t)
+	// Create SSH client config and destination from configuration
+	c, d, err := getClientConfig(&t)
 	if err != nil {
-		fmt.Println("Error parsing client configuration: ", err)
+		fmt.Println("Error parsing client configuration. ", err)
 		return cmdErr
 	}
 
-	// Get destination from configuration
-	d := getDest(&t)
+	// Create outputer
+	o, err := output.NewPcapOutput("test.pcap")
 	if err != nil {
-		fmt.Println("Error parsing destination: ", err)
+		fmt.Println("Can't create PCAP output.", err)
 		return cmdErr
 	}
 
 	// Create capturer
-	capt := capture.NewTcpdump(d, c)
+	capt := capture.NewTcpdump(*d, c, []output.Outputer{o})
+	if capt == nil {
+		fmt.Println("Error creating capturer.")
+		return cmdErr
+	}
+
+	if capt.Start() == false {
+		fmt.Println("Error starting capture")
+		return cmdErr
+	}
 
 	return cmdOk
 }

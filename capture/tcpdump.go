@@ -20,14 +20,8 @@ type Tcpdump struct {
 }
 
 // NewTcpdump creates Tcpdump Capturer
-func NewTcpdump(dest string, config *ssh.ClientConfig) Capturer {
-	o := output.NewPcapOutput("test.pcap")
-	if o == nil {
-		fmt.Println("Can't create PCAP output")
-		return nil
-	}
-
-	return &Tcpdump{dest, *config, "sudo tcpdump -U -s0 -w - 'ip and not port 22'", nil, nil, []output.Outputer{o}}
+func NewTcpdump(dest string, config *ssh.ClientConfig, outputs []output.Outputer) Capturer {
+	return &Tcpdump{dest, *config, "sudo tcpdump -U -s0 -w - 'ip and not port 22'", nil, nil, outputs}
 }
 
 // Start method connects the ssh client to the destination and start capturing

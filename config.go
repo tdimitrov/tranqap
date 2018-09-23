@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 
 	"golang.org/x/crypto/ssh"
 )
@@ -37,26 +36,28 @@ func getTarget(fname string) (target, error) {
 	return t, nil
 }
 
-func getClientConfig(t *target) (*ssh.ClientConfig, error) {
+func getClientConfig(t *target) (*ssh.ClientConfig, *string, error) {
 	var clientConfig ssh.ClientConfig
 
 	clientConfig.Auth = make([]ssh.AuthMethod, 0, 2)
 
 	if t.User == nil {
-		return nil, errors.New("Missing user in configuration")
+		return nil, nil, errors.New("Missing user in configuration")
 	}
 
 	if t.Pass == nil && t.Key == nil {
-		return nil, errors.New("Missing authentication method in configuration - provide Password or/and private key")
+		return nil, nil, errors.New("Missing authentication method in configuration - provide Password or/and private key")
 	}
 
 	if t.Host == nil {
-		return nil, errors.New("Missing host in configuration")
+		return nil, nil, errors.New("Missing host in configuration")
 	}
 
 	if t.Port == nil {
-		return nil, errors.New("Missing port in configuration")
+		return nil, nil, errors.New("Missing port in configuration")
 	}
+
+	dest := fmt.Sprintf("%s:%d", *t.Host, *t.Port)
 
 	clientConfig.User = *t.User
 	clientConfig.HostKeyCallback = ssh.InsecureIgnoreHostKey()
@@ -68,21 +69,19 @@ func getClientConfig(t *target) (*ssh.ClientConfig, error) {
 	if t.Key != nil {
 		key, err := ioutil.ReadFile(*t.Key)
 		if err != nil {
-			log.Fatalf("unable to read private key: %v", err)
+			msg := fmt.Sprintf("unable to read private key: %v", err)
+			return nil, nil, errors.New(msg)
 		}
 
 		// Create the Signer for this private key.
 		signer, err := ssh.ParsePrivateKey(key)
 		if err != nil {
-			log.Fatalf("unable to parse private key: %v", err)
+			msg := fmt.Sprintf("unable to parse private key: %v", err)
+			return nil, nil, errors.New(msg)
 		}
 
 		clientConfig.Auth = append(clientConfig.Auth, ssh.PublicKeys(signer))
 	}
 
-	return &clientConfig, nil
-}
-
-func getDest(t *target) string {
-	return fmt.Sprintf("%s:%d", *t.Host, *t.Port)
+	return &clientConfig, &dest, nil
 }

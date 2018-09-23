@@ -1,6 +1,7 @@
 package output
 
 import (
+	"errors"
 	"fmt"
 	"os"
 )
@@ -10,22 +11,23 @@ type pcapOutput struct {
 }
 
 // NewPcapOutput constructs pcapOutput object
-func NewPcapOutput(fname string) Outputer {
-	fd, err := os.OpenFile(fname, os.O_RDWR, 0755)
+func NewPcapOutput(fname string) (Outputer, error) {
+	fd, err := os.OpenFile(fname, os.O_CREATE|os.O_WRONLY, 0755)
 	if err != nil {
-		fmt.Println("Error opening file: ", err)
-		return nil
+		return nil, err
 	}
 
-	return &pcapOutput{fd}
+	return &pcapOutput{fd}, nil
 }
 
 func (pw pcapOutput) Write(p []byte) (n int, err error) {
 	n, err = pw.fd.Write(p)
 	if err != nil {
-		fmt.Println("Error writing to file: ", err)
+		msg := fmt.Sprintf("Error writing to file: %v", err)
+		fmt.Println(msg)
+		return n, errors.New(msg)
 	}
-	return n, err
+	return n, nil
 }
 
 func (pw *pcapOutput) Close() {
