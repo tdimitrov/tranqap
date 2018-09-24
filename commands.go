@@ -13,7 +13,15 @@ const (
 	cmdExit = iota
 )
 
+var capturers []capture.Capturer
+
 func cmdStart() int {
+	// Check if there is a running job
+	if len(capturers) != 0 {
+		fmt.Println("There is already a running capture.")
+		return cmdErr
+	}
+
 	// Get configuration
 	t, err := getTarget("config.json")
 	if err != nil {
@@ -46,6 +54,8 @@ func cmdStart() int {
 		fmt.Println("Error starting capture")
 		return cmdErr
 	}
+
+	capturers = append(capturers, capt)
 
 	return cmdOk
 }
