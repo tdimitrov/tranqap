@@ -45,6 +45,11 @@ func (capt *Tcpdump) Start() bool {
 
 // Stop terminates the capture
 func (capt *Tcpdump) Stop() bool {
+	err := capt.session.Signal(ssh.SIGINT)
+
+	if err != nil {
+		fmt.Println(err)
+	}
 	return false
 }
 

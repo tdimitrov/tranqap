@@ -60,6 +60,20 @@ func cmdStart() int {
 	return cmdOk
 }
 
+func cmdStop() int {
+	// Check if there is a running job
+	if len(capturers) == 0 {
+		fmt.Println("There are no running captures.")
+		return cmdErr
+	}
+
+	for _, c := range capturers {
+		c.Stop()
+	}
+
+	return cmdOk
+}
+
 func processCmd(cmd string) int {
 	switch cmd {
 	case "exit":
@@ -70,6 +84,9 @@ func processCmd(cmd string) int {
 
 	case "start":
 		return cmdStart()
+
+	case "stop":
+		return cmdStop()
 	}
 
 	return cmdErr
