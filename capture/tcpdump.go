@@ -69,7 +69,7 @@ func (capt *Tcpdump) startSession() bool {
 
 	capt.session.Stdout = writer
 
-	err = capt.session.Start("sudo tcpdump -U -s0 -w - 'ip and not port 22'")
+	err = capt.session.Start(capt.captureCmd)
 	if err != nil {
 		fmt.Println("Error running command!")
 		return false
