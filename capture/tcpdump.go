@@ -68,6 +68,7 @@ func (capt *Tcpdump) startSession() bool {
 	defer writer.Close()
 
 	capt.session.Stdout = writer
+	capt.session.Stderr, _ = output.NewPrintOutput()
 
 	err = capt.session.Start(capt.captureCmd)
 	if err != nil {
