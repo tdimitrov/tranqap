@@ -1,3 +1,5 @@
 .vagrant
 rpcap
 *.log
+*.pcap
+checks.sh

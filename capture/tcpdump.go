@@ -15,13 +15,15 @@ type Tcpdump struct {
 
 	client  *ssh.Client
 	session *ssh.Session
-
-	output []output.Outputer
+	pid     int
+	output  []output.Outputer
 }
 
 // NewTcpdump creates Tcpdump Capturer
 func NewTcpdump(dest string, config *ssh.ClientConfig, outputs []output.Outputer) Capturer {
-	return &Tcpdump{dest, *config, "sudo tcpdump -U -s0 -w - 'ip and not port 22'", nil, nil, outputs}
+	const captureCmd = "sudo tcpdump -U -s0 -w - 'ip and not port 22'"
+	const stderrToDevNull = " 2> /dev/null "
+	return &Tcpdump{dest, *config, captureCmd + stderrToDevNull + " & " + bashCmdHandlePid(), nil, nil, -1, outputs}
 }
 
 // Start method connects the ssh client to the destination and start capturing
@@ -45,12 +47,23 @@ func (capt *Tcpdump) Start() bool {
 
 // Stop terminates the capture
 func (capt *Tcpdump) Stop() bool {
-	err := capt.session.Signal(ssh.SIGINT)
-
+	sess, err := capt.client.NewSession()
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Error creating session for stop command!")
+		return false
 	}
-	return false
+
+	defer sess.Close()
+
+	err = sess.Start(fmt.Sprintf("sudo kill %d", capt.pid))
+	if err != nil {
+		fmt.Println("Error running stop command!")
+		return false
+	}
+
+	sess.Wait()
+
+	return true
 }
 
 func (capt *Tcpdump) startSession() bool {
@@ -67,14 +80,18 @@ func (capt *Tcpdump) startSession() bool {
 	writer := capt.output[0]
 	defer writer.Close()
 
+	chanPid := make(chan int)
+
 	capt.session.Stdout = writer
-	capt.session.Stderr, _ = output.NewPrintOutput()
+	capt.session.Stderr, _ = output.NewPidOutput(chanPid)
 
 	err = capt.session.Start(capt.captureCmd)
 	if err != nil {
 		fmt.Println("Error running command!")
 		return false
 	}
+
+	capt.pid = <-chanPid
 
 	capt.session.Wait()
 
