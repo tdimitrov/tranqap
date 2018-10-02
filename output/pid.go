@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+
+	"github.com/tdimitrov/rpcap/shell"
 )
 
 type pidOutput struct {
@@ -21,9 +23,9 @@ func NewPidOutput(pid chan<- int) (Outputer, error) {
 func (pw pidOutput) Write(p []byte) (n int, err error) {
 	data := string(p)
 
-	if strings.HasPrefix(data, "MY_PID_IS:") {
+	if strings.HasPrefix(data, shell.PidPrefix) {
 		// The PID is sent. Parse it and send it over the channel
-		data := strings.Replace(data, "MY_PID_IS:", "", 1)
+		data := strings.Replace(data, shell.PidPrefix, "", 1)
 		pid, err := strconv.Atoi(strings.Trim(data, "\n\t "))
 		if err != nil {
 			fmt.Println("Expected PID, received", data)

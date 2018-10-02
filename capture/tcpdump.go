@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/tdimitrov/rpcap/output"
+	"github.com/tdimitrov/rpcap/shell"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -22,8 +23,7 @@ type Tcpdump struct {
 // NewTcpdump creates Tcpdump Capturer
 func NewTcpdump(dest string, config *ssh.ClientConfig, outputs []output.Outputer) Capturer {
 	const captureCmd = "sudo tcpdump -U -s0 -w - 'ip and not port 22'"
-	const stderrToDevNull = " 2> /dev/null "
-	return &Tcpdump{dest, *config, captureCmd + stderrToDevNull + " & " + bashCmdHandlePid(), nil, nil, -1, outputs}
+	return &Tcpdump{dest, *config, captureCmd + shell.StderrToDevNull + shell.RunInBackground + shell.CmdHandlePid(), nil, nil, -1, outputs}
 }
 
 // Start method connects the ssh client to the destination and start capturing
