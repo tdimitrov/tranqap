@@ -27,5 +27,5 @@ func connect(dest string, clientConfig *ssh.ClientConfig) (*ssh.Client, error) {
 //		transmitted over stdout
 // 3. Waits the PID to finish, so that the session remains active until stop command is sent from rpcap shell
 func bashCmdHandlePid() string {
-	return "RPCAP_MY_PID=$! ; echo $RPCAP_MY_PID >&2 ; wait $RPCAP_MY_PID"
+	return "RPCAP_MY_PID=$! ; echo MY_PID_IS:$RPCAP_MY_PID >&2 ; wait $RPCAP_MY_PID"
 }

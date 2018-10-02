@@ -20,14 +20,21 @@ func NewPidOutput(pid chan<- int) (Outputer, error) {
 
 func (pw pidOutput) Write(p []byte) (n int, err error) {
 	data := string(p)
-	pid, err := strconv.Atoi(strings.Trim(data, "\n\t "))
-	if err != nil {
-		fmt.Println("Expected PID, received", data)
-	}
 
-	pw.result <- pid
-	close(pw.result)
-	fmt.Println("Got PID", pid)
+	if strings.HasPrefix(data, "MY_PID_IS:") {
+		// The PID is sent. Parse it and send it over the channel
+		data := strings.Replace(data, "MY_PID_IS:", "", 1)
+		pid, err := strconv.Atoi(strings.Trim(data, "\n\t "))
+		if err != nil {
+			fmt.Println("Expected PID, received", data)
+		}
+
+		pw.result <- pid
+		close(pw.result)
+	} else {
+		// It's something else. Log it on the screen
+		fmt.Println(data)
+	}
 
 	return len(p), nil
 }
