@@ -55,13 +55,25 @@ func (capt *Tcpdump) Stop() bool {
 
 	defer sess.Close()
 
-	err = sess.Start(fmt.Sprintf("sudo kill %d", capt.pid))
+	results := make(chan int, 2)
+	sess.Stdout = output.NewKillOutput(results)
+
+	err = sess.Start(shell.CmdKillPid(capt.pid))
 	if err != nil {
 		fmt.Println("Error running stop command!")
 		return false
 	}
 
 	sess.Wait()
+
+	r1 := <-results
+	r2 := <-results
+
+	if r1 != 0 {
+		fmt.Println("Process is not running")
+	} else if r2 == 0 {
+		fmt.Println("Process is not responding")
+	}
 
 	return true
 }

@@ -1,5 +1,7 @@
 package shell
 
+import "fmt"
+
 // StderrToDevNull is a bash snippet which redirects stderr output to /dev/null
 const StderrToDevNull = " 2> /dev/null "
 
@@ -16,4 +18,12 @@ const PidPrefix = "MY_PID_IS:"
 // 3. Waits the PID to finish, so that the session remains active until stop command is sent from rpcap shell
 func CmdHandlePid() string {
 	return "RPCAP_MY_PID=$! ; echo " + PidPrefix + " $RPCAP_MY_PID >&2 ; wait $RPCAP_MY_PID"
+}
+
+// CmdKillPid returns a Bash one-liner, which does the following:
+// 1. Sends SIGINIT to pid, so the process can terminate gracefully
+// 2. Send signal 0 to the same pid, to be sure that the process has terminated
+// 3. Returns the result codes from both command to the caller via stdout
+func CmdKillPid(pid int) string {
+	return fmt.Sprintf("sudo kill %d ; R1=$?; kill -0 %d; R2=$?; echo $R1 $R2", pid, pid)
 }
