@@ -67,9 +67,13 @@ func cmdStop() int {
 		return cmdErr
 	}
 
+	// Stop all capturers
 	for _, c := range capturers {
 		c.Stop()
 	}
+
+	// Clear the slice
+	capturers = capturers[:0]
 
 	return cmdOk
 }
