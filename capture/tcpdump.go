@@ -56,7 +56,7 @@ func (capt *Tcpdump) Stop() bool {
 	defer sess.Close()
 
 	results := make(chan int, 2)
-	sess.Stdout = output.NewKillOutput(results)
+	sess.Stdout = shell.NewKillPidHandler(results)
 
 	err = sess.Start(shell.CmdKillPid(capt.pid))
 	if err != nil {
@@ -95,7 +95,7 @@ func (capt *Tcpdump) startSession() bool {
 	chanPid := make(chan int)
 
 	capt.session.Stdout = writer
-	capt.session.Stderr, _ = output.NewPidOutput(chanPid)
+	capt.session.Stderr, _ = shell.NewPidOutput(chanPid)
 
 	err = capt.session.Start(capt.captureCmd)
 	if err != nil {
