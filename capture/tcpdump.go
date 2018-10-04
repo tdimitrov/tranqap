@@ -23,7 +23,7 @@ type Tcpdump struct {
 // NewTcpdump creates Tcpdump Capturer
 func NewTcpdump(dest string, config *ssh.ClientConfig, outputs []output.Outputer) Capturer {
 	const captureCmd = "sudo tcpdump -U -s0 -w - 'ip and not port 22'"
-	return &Tcpdump{dest, *config, captureCmd + shell.StderrToDevNull + shell.RunInBackground + shell.CmdHandlePid(), nil, nil, -1, outputs}
+	return &Tcpdump{dest, *config, captureCmd + shell.StderrToDevNull + shell.RunInBackground + shell.CmdGetPid(), nil, nil, -1, outputs}
 }
 
 // Start method connects the ssh client to the destination and start capturing
@@ -95,7 +95,7 @@ func (capt *Tcpdump) startSession() bool {
 	chanPid := make(chan int)
 
 	capt.session.Stdout = writer
-	capt.session.Stderr, _ = shell.NewPidOutput(chanPid)
+	capt.session.Stderr, _ = shell.NewGetPidHandler(chanPid)
 
 	err = capt.session.Start(capt.captureCmd)
 	if err != nil {

@@ -9,28 +9,28 @@ import (
 // pidPrefix is the string, which is put in front of the PID, when it is transmitted over stderr
 const pidPrefix = "MY_PID_IS:"
 
-// CmdHandlePid returns a Bash one-liner, which does the following:
+// CmdGetPid returns a Bash one-liner, which does the following:
 // 1. Saves the PID of the last command executed in a Bash variable. This is supposed to be the capture command
 // 2. Echoes the PID to stderr, so that it can be saved by the Capturer. Stderr is used, because PCAP data is
 //		transmitted over stdout
 // 3. Waits the PID to finish, so that the session remains active until stop command is sent from rpcap shell
-func CmdHandlePid() string {
+func CmdGetPid() string {
 	return "RPCAP_MY_PID=$! ; echo " + pidPrefix + " $RPCAP_MY_PID >&2 ; wait $RPCAP_MY_PID"
 }
 
-type pidOutput struct {
+type getPidHandler struct {
 	result chan<- int
 }
 
-// NewPidOutput creates new pidOutput instance.
+// NewGetPidHandler creates new pidOutput instance.
 // It reads a PID from the buffer, passed to Write(). pidOutput is used to parse
 // the PID of the capturer so that it can be stopped on user request.
 // It's input parameter is a channel, used to return the PID as an integer
-func NewPidOutput(pid chan<- int) (CmdHandler, error) {
-	return pidOutput{pid}, nil
+func NewGetPidHandler(pid chan<- int) (CmdHandler, error) {
+	return getPidHandler{pid}, nil
 }
 
-func (pw pidOutput) Write(p []byte) (n int, err error) {
+func (pw getPidHandler) Write(p []byte) (n int, err error) {
 	data := string(p)
 
 	if strings.HasPrefix(data, pidPrefix) {
