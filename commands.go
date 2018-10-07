@@ -37,9 +37,10 @@ func cmdStart() int {
 	}
 
 	// Create outputer
-	o, err := output.NewFileOutput("test.pcap")
+	//o, err := output.NewFileOutput("test.pcap")
+	o, err := output.NewWsharkOutput("/tmp/test.pipe")
 	if err != nil {
-		fmt.Println("Can't create PCAP output.", err)
+		fmt.Println("Can't create output.", err)
 		return cmdErr
 	}
 

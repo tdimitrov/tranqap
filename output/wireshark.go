@@ -22,7 +22,7 @@ func NewWsharkOutput(pipeFname string) (Outputer, error) {
 	}
 
 	// Then open it
-	fd, err := os.OpenFile(pipeFname, os.O_WRONLY, 0755)
+	fd, err := os.OpenFile(pipeFname, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0777)
 	if err != nil {
 		return nil, err
 	}
@@ -52,6 +52,23 @@ func (pw *wsharkOutput) Close() {
 }
 
 func forkWireshark() (int, error) {
+	const bin = "wireshark"
+
+	cmd := exec.Command("wireshark", "-k", "-i /tmp/test.pipe")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	err := cmd.Start()
+	if err != nil {
+		return -1, err
+	}
+
+	fmt.Println(cmd.Process.Pid)
+
+	return cmd.Process.Pid, nil
+}
+
+func forkWireshark1() (int, error) {
 	const bin = "wireshark"
 
 	binary, err := exec.LookPath(bin)
