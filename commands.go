@@ -37,7 +37,7 @@ func cmdStart() int {
 	}
 
 	// Create outputer
-	o, err := output.NewPcapOutput("test.pcap")
+	o, err := output.NewFileOutput("test.pcap")
 	if err != nil {
 		fmt.Println("Can't create PCAP output.", err)
 		return cmdErr

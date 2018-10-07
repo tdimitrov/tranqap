@@ -6,21 +6,21 @@ import (
 	"os"
 )
 
-type pcapOutput struct {
+type fileOutput struct {
 	fd *os.File
 }
 
-// NewPcapOutput constructs pcapOutput object
-func NewPcapOutput(fname string) (Outputer, error) {
+// NewFileOutput constructs fileOutput object
+func NewFileOutput(fname string) (Outputer, error) {
 	fd, err := os.OpenFile(fname, os.O_CREATE|os.O_WRONLY, 0755)
 	if err != nil {
 		return nil, err
 	}
 
-	return &pcapOutput{fd}, nil
+	return &fileOutput{fd}, nil
 }
 
-func (pw pcapOutput) Write(p []byte) (n int, err error) {
+func (pw fileOutput) Write(p []byte) (n int, err error) {
 	n, err = pw.fd.Write(p)
 	if err != nil {
 		msg := fmt.Sprintf("Error writing to file: %v", err)
@@ -30,6 +30,6 @@ func (pw pcapOutput) Write(p []byte) (n int, err error) {
 	return n, nil
 }
 
-func (pw *pcapOutput) Close() {
+func (pw *fileOutput) Close() {
 	pw.fd.Close()
 }
