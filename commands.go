@@ -38,7 +38,7 @@ func cmdStart() int {
 
 	// Create outputer
 	//o, err := output.NewFileOutput("test.pcap")
-	o, err := output.NewWsharkOutput("/tmp/test.pipe")
+	o, err := output.NewWsharkOutput()
 	if err != nil {
 		fmt.Println("Can't create output.", err)
 		return cmdErr
