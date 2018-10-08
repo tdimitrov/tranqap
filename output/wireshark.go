@@ -54,7 +54,7 @@ func (pw *wsharkOutput) Close() {
 func forkWireshark() (int, error) {
 	const bin = "wireshark"
 
-	cmd := exec.Command("wireshark", "-k", "-i /tmp/test.pipe")
+	cmd := exec.Command("wireshark", "-k", "-i", "/tmp/test.pipe")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
