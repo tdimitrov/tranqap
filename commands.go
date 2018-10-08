@@ -36,11 +36,22 @@ func cmdStart() int {
 		return cmdErr
 	}
 
-	// Create outputer
-	//o, err := output.NewFileOutput("test.pcap")
-	o, err := output.NewWsharkOutput()
+	// Create outputers
+	f, err := output.NewFileOutput("test.pcap")
 	if err != nil {
-		fmt.Println("Can't create output.", err)
+		fmt.Println("Can't create File output.", err)
+		return cmdErr
+	}
+
+	w, err := output.NewWsharkOutput()
+	if err != nil {
+		fmt.Println("Can't create Wireshark output.", err)
+		return cmdErr
+	}
+
+	o, err := output.NewMultiOutput(f, w)
+	if err != nil {
+		fmt.Println("Can't create multi output.", err)
 		return cmdErr
 	}
 
