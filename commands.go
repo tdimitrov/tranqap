@@ -72,6 +72,14 @@ func cmdStart() int {
 	return cmdOk
 }
 
+// Used in cmdStop() and handleSIGINT()
+func stopCapturers() {
+	// Stop all capturers
+	for _, c := range capturers {
+		c.Stop()
+	}
+}
+
 func cmdStop() int {
 	// Check if there is a running job
 	if len(capturers) == 0 {
@@ -79,10 +87,7 @@ func cmdStop() int {
 		return cmdErr
 	}
 
-	// Stop all capturers
-	for _, c := range capturers {
-		c.Stop()
-	}
+	stopCapturers()
 
 	// Clear the slice
 	capturers = capturers[:0]

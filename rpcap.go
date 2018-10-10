@@ -4,10 +4,13 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/signal"
 	"strings"
 )
 
 func main() {
+	go handleSIGINT()
+
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		fmt.Print("rpcap> ")
@@ -17,4 +20,13 @@ func main() {
 			break
 		}
 	}
+}
+
+func handleSIGINT() {
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	_ = <-c
+	stopCapturers()
+
+	os.Exit(1)
 }
