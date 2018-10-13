@@ -2,11 +2,30 @@ package capture
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/tdimitrov/rpcap/output"
 	"github.com/tdimitrov/rpcap/shell"
 	"golang.org/x/crypto/ssh"
 )
+
+type atomicPid struct {
+	pid int
+	mut sync.Mutex
+}
+
+func (p *atomicPid) Set(val int) {
+	p.mut.Lock()
+	p.pid = val
+	p.mut.Unlock()
+}
+
+func (p *atomicPid) Get() int {
+	p.mut.Lock()
+	val := p.pid
+	p.mut.Unlock()
+	return val
+}
 
 // Tcpdump is Capturer implementation for tcpdump
 type Tcpdump struct {
@@ -16,14 +35,14 @@ type Tcpdump struct {
 
 	client  *ssh.Client
 	session *ssh.Session
-	pid     int
+	pid     atomicPid
 	output  []output.Outputer
 }
 
 // NewTcpdump creates Tcpdump Capturer
 func NewTcpdump(dest string, config *ssh.ClientConfig, outputs []output.Outputer) Capturer {
 	const captureCmd = "sudo tcpdump -U -s0 -w - 'ip and not port 22'"
-	return &Tcpdump{dest, *config, captureCmd + shell.StderrToDevNull + shell.RunInBackground + shell.CmdGetPid(), nil, nil, -1, outputs}
+	return &Tcpdump{dest, *config, captureCmd + shell.StderrToDevNull + shell.RunInBackground + shell.CmdGetPid(), nil, nil, atomicPid{}, outputs}
 }
 
 // Start method connects the ssh client to the destination and start capturing
@@ -58,7 +77,7 @@ func (capt *Tcpdump) Stop() bool {
 	results := make(chan int, 2)
 	sess.Stdout = shell.NewKillPidHandler(results)
 
-	err = sess.Start(shell.CmdKillPid(capt.pid))
+	err = sess.Start(shell.CmdKillPid(capt.pid.Get()))
 	if err != nil {
 		fmt.Println("Error running stop command!")
 		return false
@@ -103,7 +122,7 @@ func (capt *Tcpdump) startSession() bool {
 		return false
 	}
 
-	capt.pid = <-chanPid
+	capt.pid.Set(<-chanPid)
 
 	capt.session.Wait()
 
