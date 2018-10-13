@@ -14,9 +14,16 @@ func main() {
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		fmt.Print("rpcap> ")
-		command, _ := reader.ReadString('\n')
+		command, err := reader.ReadString('\n')
+		if err != nil {
+			// This should be io.EOF
+			fmt.Println() // Print an empty line not to mess the prompt of the shell
+			capturers.StopAll()
+			break
+		}
 
 		if processCmd(strings.TrimSuffix(command, "\n")) == cmdExit {
+			capturers.StopAll()
 			break
 		}
 	}
