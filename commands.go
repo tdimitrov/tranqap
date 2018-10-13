@@ -98,7 +98,9 @@ func processCmd(cmd string) int {
 
 	case "stop":
 		return cmdStop()
-	}
 
-	return cmdErr
+	default:
+		fmt.Println("No such command", cmd)
+		return cmdErr
+	}
 }
