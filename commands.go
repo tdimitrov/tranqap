@@ -13,11 +13,11 @@ const (
 	cmdExit = iota
 )
 
-var capturers []capture.Capturer
+var capturers capture.Storage
 
 func cmdStart() int {
 	// Check if there is a running job
-	if len(capturers) != 0 {
+	if capturers.Count() != 0 {
 		fmt.Println("There is already a running capture.")
 		return cmdErr
 	}
@@ -67,30 +67,20 @@ func cmdStart() int {
 		return cmdErr
 	}
 
-	capturers = append(capturers, capt)
+	capturers.Add(capt)
 
 	return cmdOk
 }
 
-// Used in cmdStop() and handleSIGINT()
-func stopCapturers() {
-	// Stop all capturers
-	for _, c := range capturers {
-		c.Stop()
-	}
-}
-
 func cmdStop() int {
 	// Check if there is a running job
-	if len(capturers) == 0 {
+	if capturers.Count() == 0 {
 		fmt.Println("There are no running captures.")
 		return cmdErr
 	}
 
-	stopCapturers()
-
-	// Clear the slice
-	capturers = capturers[:0]
+	capturers.StopAll()
+	capturers.Clear()
 
 	return cmdOk
 }

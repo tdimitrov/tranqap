@@ -26,7 +26,7 @@ func handleSIGINT() {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	_ = <-c
-	stopCapturers()
+	capturers.StopAll()
 
 	os.Exit(1)
 }
