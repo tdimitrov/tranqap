@@ -36,13 +36,14 @@ type Tcpdump struct {
 	client  *ssh.Client
 	session *ssh.Session
 	pid     atomicPid
-	output  []output.Outputer
+	out     output.Outputer
 }
 
 // NewTcpdump creates Tcpdump Capturer
-func NewTcpdump(dest string, config *ssh.ClientConfig, outputs []output.Outputer) Capturer {
+func NewTcpdump(dest string, config *ssh.ClientConfig, out output.Outputer) Capturer {
 	const captureCmd = "sudo tcpdump -U -s0 -w - 'ip and not port 22'"
-	return &Tcpdump{dest, *config, captureCmd + shell.StderrToDevNull + shell.RunInBackground + shell.CmdGetPid(), nil, nil, atomicPid{}, outputs}
+	return &Tcpdump{dest, *config, captureCmd + shell.StderrToDevNull + shell.RunInBackground + shell.CmdGetPid(),
+		nil, nil, atomicPid{}, out}
 }
 
 // Start method connects the ssh client to the destination and start capturing
@@ -108,7 +109,7 @@ func (capt *Tcpdump) startSession() bool {
 
 	defer capt.session.Close()
 
-	writer := capt.output[0]
+	writer := capt.out
 	defer writer.Close()
 
 	chanPid := make(chan int)

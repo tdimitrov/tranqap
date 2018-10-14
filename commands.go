@@ -56,7 +56,7 @@ func cmdStart() int {
 	}
 
 	// Create capturer
-	capt := capture.NewTcpdump(*d, c, []output.Outputer{o})
+	capt := capture.NewTcpdump(*d, c, o)
 	if capt == nil {
 		fmt.Println("Error creating capturer.")
 		return cmdErr
