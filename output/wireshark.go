@@ -14,7 +14,7 @@ type wsharkOutput struct {
 }
 
 // NewWsharkOutput constructs wsharkOutput object
-func NewWsharkOutput() (Outputer, error) {
+func NewWsharkOutput() (Outputer, chan struct{}, error) {
 	// Create pipe
 	r, w := io.Pipe()
 
@@ -26,12 +26,17 @@ func NewWsharkOutput() (Outputer, error) {
 
 	err := cmd.Start()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	pid := cmd.Process.Pid
+	ch := make(chan struct{}, 1)
 
-	return &wsharkOutput{pid, r, w}, nil
+	go func() {
+		cmd.Wait()
+		ch <- struct{}{}
+	}()
+
+	return &wsharkOutput{cmd.Process.Pid, r, w}, ch, nil
 }
 
 func (pw wsharkOutput) Write(p []byte) (n int, err error) {

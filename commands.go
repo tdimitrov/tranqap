@@ -42,19 +42,30 @@ func cmdStart() int {
 		fmt.Println("Can't create File output.", err)
 		return cmdErr
 	}
-
-	w, err := output.NewWsharkOutput()
-	if err != nil {
-		fmt.Println("Can't create Wireshark output.", err)
-		return cmdErr
-	}
-
-	o, err := newMultiOutput(f, w)
+	/*
+		w, onWsharkExit, err := output.NewWsharkOutput()
+		if err != nil {
+			fmt.Println("Can't create Wireshark output.", err)
+			return cmdErr
+		}
+	*/
+	// Create MultiOutput
+	o, err := newMultiOutput(f)
 	if err != nil {
 		fmt.Println("Can't create multi output.", err)
 		return cmdErr
 	}
-
+	/*
+		go func() {
+			<-onWsharkExit
+			w.Close()
+			if o.RemoveOutputer(w) != nil {
+				fmt.Println("Error removing wireshark outputer from multioutput")
+			} else {
+				fmt.Println("Wireshark closed. Removing outputer.")
+			}
+		}()
+	*/
 	// Create capturer
 	capt := capture.NewTcpdump(*d, c, o)
 	if capt == nil {
@@ -85,6 +96,10 @@ func cmdStop() int {
 	return cmdOk
 }
 
+func cmdWireshark() int {
+	return cmdOk
+}
+
 func processCmd(cmd string) int {
 	switch cmd {
 	case "exit":
@@ -98,6 +113,9 @@ func processCmd(cmd string) int {
 
 	case "stop":
 		return cmdStop()
+
+	case "wireshark":
+		return cmdWireshark()
 
 	default:
 		fmt.Println("No such command", cmd)
