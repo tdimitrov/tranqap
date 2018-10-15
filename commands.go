@@ -49,7 +49,7 @@ func cmdStart() int {
 		return cmdErr
 	}
 
-	o, err := output.NewMultiOutput(f, w)
+	o, err := newMultiOutput(f, w)
 	if err != nil {
 		fmt.Println("Can't create multi output.", err)
 		return cmdErr

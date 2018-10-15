@@ -1,4 +1,11 @@
-package output
+package main
+
+import (
+	"errors"
+	"sync"
+
+	"github.com/tdimitrov/rpcap/output"
+)
 
 // PCAP header is a struct like this:
 //
@@ -21,13 +28,14 @@ package output
 const pcapHeaderSize = 32 + 2*16 + 4*32
 
 type multiOutput struct {
-	members    []Outputer
+	members    []output.Outputer
+	membersMut sync.Mutex
 	pcapHeader []byte
 }
 
 // NewMultiOutput constructs multiOutput object
-func NewMultiOutput(outers ...Outputer) (Outputer, error) {
-	return &multiOutput{outers, nil}, nil
+func newMultiOutput(outers ...output.Outputer) (*multiOutput, error) {
+	return &multiOutput{outers, sync.Mutex{}, nil}, nil
 }
 
 func (mo *multiOutput) Write(p []byte) (n int, err error) {
@@ -38,14 +46,47 @@ func (mo *multiOutput) Write(p []byte) (n int, err error) {
 	}
 
 	// Forward to the capturers
+	mo.membersMut.Lock()
 	for _, o := range mo.members {
 		o.Write(p)
 	}
+	mo.membersMut.Unlock()
+
 	return len(p), nil
 }
 
 func (mo *multiOutput) Close() {
+	mo.membersMut.Lock()
 	for _, o := range mo.members {
 		o.Close()
 	}
+	mo.membersMut.Unlock()
+}
+
+func (mo *multiOutput) AddOutputer(newOut output.Outputer) error {
+	mo.membersMut.Lock()
+	defer mo.membersMut.Unlock()
+
+	for i := range mo.members {
+		if mo.members[i] == newOut {
+			return errors.New("Outputer already added")
+		}
+	}
+
+	mo.members = append(mo.members, newOut)
+	return nil
+}
+
+func (mo *multiOutput) RemoveOutputer(member output.Outputer) error {
+	mo.membersMut.Lock()
+	defer mo.membersMut.Unlock()
+
+	for i := range mo.members {
+		if mo.members[i] == member {
+			mo.members = append(mo.members[:i], mo.members[i+1:]...)
+			return nil
+		}
+	}
+
+	return errors.New("Outputer not found")
 }
