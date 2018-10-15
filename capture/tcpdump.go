@@ -95,6 +95,9 @@ func (capt *Tcpdump) Stop() bool {
 		fmt.Println("Process is not responding")
 	}
 
+	// Close outputer
+	capt.out.Close()
+
 	return true
 }
 
