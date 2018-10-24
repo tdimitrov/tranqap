@@ -14,14 +14,13 @@ type fileOutput struct {
 }
 
 // NewFileOutput constructs fileOutput object
-func NewFileOutput(fname string) (Outputer, error) {
-	//fd, err := os.OpenFile(fname, os.O_CREATE|os.O_WRONLY, 0755)
+func NewFileOutput(fname string) Outputer {
 	fd, err := openFile(fname)
 	if err != nil {
-		return nil, err
+		return nil
 	}
 
-	return &fileOutput{fd}, nil
+	return &fileOutput{fd}
 }
 
 func (pw fileOutput) Write(p []byte) (n int, err error) {

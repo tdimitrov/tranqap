@@ -36,10 +36,10 @@ func cmdStart() int {
 		return cmdErr
 	}
 
-	// Create outputers
-	f, err := output.NewFileOutput("test.pcap")
-	if err != nil {
-		fmt.Println("Can't create File output.", err)
+	// Create file output
+	f := output.NewFileOutput("test.pcap")
+	if f == nil {
+		fmt.Println("Can't create File output.")
 		return cmdErr
 	}
 	/*
