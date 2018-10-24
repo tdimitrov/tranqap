@@ -32,18 +32,24 @@ type Tcpdump struct {
 	dest       string
 	config     ssh.ClientConfig
 	captureCmd string
-
-	client  *ssh.Client
-	session *ssh.Session
-	pid     atomicPid
-	out     output.Outputer
+	client     *ssh.Client
+	session    *ssh.Session
+	pid        atomicPid
+	out        *output.MultiOutput
 }
 
 // NewTcpdump creates Tcpdump Capturer
-func NewTcpdump(dest string, config *ssh.ClientConfig, out output.Outputer) Capturer {
+func NewTcpdump(dest string, config *ssh.ClientConfig, outer *output.MultiOutput) Capturer {
 	const captureCmd = "sudo tcpdump -U -s0 -w - 'ip and not port 22'"
-	return &Tcpdump{dest, *config, captureCmd + shell.StderrToDevNull + shell.RunInBackground + shell.CmdGetPid(),
-		nil, nil, atomicPid{}, out}
+	return &Tcpdump{
+		dest,
+		*config,
+		captureCmd + shell.StderrToDevNull + shell.RunInBackground + shell.CmdGetPid(),
+		nil,
+		nil,
+		atomicPid{},
+		outer,
+	}
 }
 
 // Start method connects the ssh client to the destination and start capturing
@@ -95,10 +101,14 @@ func (capt *Tcpdump) Stop() bool {
 		fmt.Println("Process is not responding")
 	}
 
-	// Close outputer
 	capt.out.Close()
 
 	return true
+}
+
+// AddOutputer calls AddMember of the MultiOutput instance of Tcpdump
+func (capt *Tcpdump) AddOutputer(newOutputerFn output.OutputerFactory) error {
+	return capt.out.AddMember(newOutputerFn)
 }
 
 func (capt *Tcpdump) startSession() bool {
