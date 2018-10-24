@@ -9,38 +9,37 @@ import (
 
 type wsharkOutput struct {
 	pid   int
-	read  *io.PipeReader
-	write *io.PipeWriter
+	stdin io.WriteCloser
+	event MOEventChan
 }
 
 // NewWsharkOutput constructs wsharkOutput object
-func NewWsharkOutput() (Outputer, chan struct{}, error) {
-	// Create pipe
-	r, w := io.Pipe()
-
+func NewWsharkOutput(eventCh MOEventChan) Outputer {
 	// Fork wireshark
 	cmd := exec.Command("wireshark", "-k", "-i", "-")
-	cmd.Stdout = nil
-	cmd.Stderr = nil
-	cmd.Stdin = r
 
-	err := cmd.Start()
+	stdin, err := cmd.StdinPipe()
 	if err != nil {
-		return nil, nil, err
+		return nil
 	}
 
-	ch := make(chan struct{}, 1)
+	err = cmd.Start()
+	if err != nil {
+		return nil
+	}
+
+	ret := &wsharkOutput{cmd.Process.Pid, stdin, eventCh}
 
 	go func() {
 		cmd.Wait()
-		ch <- struct{}{}
+		eventCh <- MultiOutputEvent{ret, OutputerDead}
 	}()
 
-	return &wsharkOutput{cmd.Process.Pid, r, w}, ch, nil
+	return ret
 }
 
 func (pw wsharkOutput) Write(p []byte) (n int, err error) {
-	n, err = pw.write.Write(p)
+	n, err = pw.stdin.Write(p)
 	if err != nil {
 		msg := fmt.Sprintf("Error writing: %v", err)
 		fmt.Println(msg)
@@ -50,6 +49,5 @@ func (pw wsharkOutput) Write(p []byte) (n int, err error) {
 }
 
 func (pw *wsharkOutput) Close() {
-	pw.write.Close()
-	pw.read.Close()
+	pw.stdin.Close()
 }

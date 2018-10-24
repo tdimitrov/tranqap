@@ -75,12 +75,20 @@ func cmdStop() int {
 	}
 
 	capturers.StopAll()
+
 	capturers.Clear()
 
 	return cmdOk
 }
 
 func cmdWireshark() int {
+	// Prepare a factory function, which creates Wireshark Outputer
+	factFn := func(p output.MOEventChan) output.Outputer {
+		return output.NewWsharkOutput(p)
+	}
+
+	capturers.AddNewOutput(factFn)
+
 	return cmdOk
 }
 
