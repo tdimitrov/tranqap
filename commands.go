@@ -42,32 +42,16 @@ func cmdStart() int {
 		fmt.Println("Can't create File output.")
 		return cmdErr
 	}
-	/*
-		w, onWsharkExit, err := output.NewWsharkOutput()
-		if err != nil {
-			fmt.Println("Can't create Wireshark output.", err)
-			return cmdErr
-		}
-	*/
-	// Create MultiOutput
-	o, err := newMultiOutput(f)
-	if err != nil {
-		fmt.Println("Can't create multi output.", err)
+
+	// Create multioutput and attach the file output to it
+	m := output.NewMultiOutput(f)
+	if m == nil {
+		fmt.Println("Can't create Multi output.")
 		return cmdErr
 	}
-	/*
-		go func() {
-			<-onWsharkExit
-			w.Close()
-			if o.RemoveOutputer(w) != nil {
-				fmt.Println("Error removing wireshark outputer from multioutput")
-			} else {
-				fmt.Println("Wireshark closed. Removing outputer.")
-			}
-		}()
-	*/
+
 	// Create capturer
-	capt := capture.NewTcpdump(*d, c, o)
+	capt := capture.NewTcpdump(*d, c, m)
 	if capt == nil {
 		fmt.Println("Error creating capturer.")
 		return cmdErr
