@@ -23,7 +23,7 @@ import (
 // It's multiOutput's job to save the header for the stream and to put it in
 // the beginning of each new stream.
 
-const pcapHeaderSize = 32 + 2*16 + 4*32
+const pcapHeaderSize = 24 // From the struct above: (32 + 2*16 + 4*32) / 8
 
 const (
 	// OutputerDead is generated to the MultiOutput when
@@ -106,11 +106,16 @@ func (mo *MultiOutput) AddMember(newOutFn OutputerFactory) error {
 	mo.membersMut.Lock()
 	defer mo.membersMut.Unlock()
 
+	// Create new member
 	newMember := newOutFn(mo.events)
 	if newMember == nil {
 		return errors.New("Error creating Outputer with factory function")
 	}
 
+	// Send the PCAP header
+	newMember.Write(mo.pcapHeader)
+
+	// Add to members list
 	mo.members = append(mo.members, newMember)
 	return nil
 }
