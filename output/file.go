@@ -44,8 +44,10 @@ func openFile(filePath string) (*os.File, error) {
 	if !fileExists(filePath) {
 		fd, err := os.OpenFile(filePath, os.O_CREATE|os.O_WRONLY, 0755)
 		if err != nil {
-			return fd, nil
+			fmt.Println("Error opening file: ", err)
+			return nil, err
 		}
+		return fd, err
 	}
 
 	// Split filename and extenson
