@@ -23,46 +23,53 @@ func cmdStart() int {
 	}
 
 	// Get configuration
-	t, err := getTarget("config.json")
+	config, err := getConfig("config.json")
 	if err != nil {
 		fmt.Println("Error loading configuration. ", err)
 		return cmdErr
 	}
 
 	// Create SSH client config and destination from configuration
-	c, d, err := getClientConfig(&t)
-	if err != nil {
-		fmt.Println("Error parsing client configuration. ", err)
+	if len(config.Targets) == 0 {
+		fmt.Println("No targets defined in config.")
 		return cmdErr
 	}
 
-	// Create file output
-	f := output.NewFileOutput("test.pcap")
-	if f == nil {
-		fmt.Println("Can't create File output.")
-		return cmdErr
-	}
+	for _, t := range config.Targets {
+		c, d, err := getClientConfig(&t)
+		if err != nil {
+			fmt.Println("Error parsing client configuration. ", err)
+			return cmdErr
+		}
 
-	// Create multioutput and attach the file output to it
-	m := output.NewMultiOutput(f)
-	if m == nil {
-		fmt.Println("Can't create Multi output.")
-		return cmdErr
-	}
+		// Create file output
+		f := output.NewFileOutput("test.pcap")
+		if f == nil {
+			fmt.Println("Can't create File output.")
+			return cmdErr
+		}
 
-	// Create capturer
-	capt := capture.NewTcpdump(*d, c, m)
-	if capt == nil {
-		fmt.Println("Error creating capturer.")
-		return cmdErr
-	}
+		// Create multioutput and attach the file output to it
+		m := output.NewMultiOutput(f)
+		if m == nil {
+			fmt.Println("Can't create Multi output.")
+			return cmdErr
+		}
 
-	if capt.Start() == false {
-		fmt.Println("Error starting capture")
-		return cmdErr
-	}
+		// Create capturer
+		capt := capture.NewTcpdump(*d, c, m)
+		if capt == nil {
+			fmt.Println("Error creating capturer.")
+			return cmdErr
+		}
 
-	capturers.Add(capt)
+		if capt.Start() == false {
+			fmt.Println("Error starting capture")
+			return cmdErr
+		}
+
+		capturers.Add(capt)
+	}
 
 	return cmdOk
 }

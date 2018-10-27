@@ -1,7 +1,22 @@
 {
-    "host": "127.0.0.1",
-    "port": 2222,
-    "user": "vagrant",
-    "pass": "secret",
-    "key": ".vagrant/machines/default/virtualbox/private_key"
+    "targets" : [
+        {
+            "Name": "Local target",
+            "Host": "127.0.0.1",
+            "Port": 2222,
+            "User": "vagrant",
+            "Key": ".vagrant/machines/default/virtualbox/private_key",
+            "Destination": "local_target_pcaps",
+            "File Pattern": "trace",
+            "File Rotation Count": 10
+        },
+        {
+            "Name": "Fake target",
+            "Host": "127.0.0.1",
+            "Port": 2323,
+            "User": "vagrant",
+            "Key": ".vagrant/machines/default/virtualbox/private_key"
+        }
+    ]
+
 }
