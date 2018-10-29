@@ -122,13 +122,11 @@ func (capt *Tcpdump) startSession() bool {
 	}
 
 	defer capt.session.Close()
-
-	writer := capt.out
-	defer writer.Close()
+	defer capt.out.Close()
 
 	chanPid := make(chan int)
 
-	capt.session.Stdout = writer
+	capt.session.Stdout = capt.out
 	capt.session.Stderr, _ = shell.NewGetPidHandler(chanPid)
 
 	err = capt.session.Start(capt.captureCmd)
