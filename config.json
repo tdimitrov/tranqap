@@ -1,21 +1,24 @@
 {
     "targets" : [
         {
-            "Name": "Local target",
+            "Name": "Local target 1",
             "Host": "127.0.0.1",
             "Port": 2222,
-            "User": "vagrant",
-            "Key": ".vagrant/machines/default/virtualbox/private_key",
-            "Destination": "local_target_pcaps",
+            "User": "root",
+            "Key": "docker/ssh-key",
+            "Destination": "PCAPs/local_target_1",
             "File Pattern": "trace",
             "File Rotation Count": 10
         },
         {
-            "Name": "Fake target",
+            "Name": "Local target 2",
             "Host": "127.0.0.1",
-            "Port": 2323,
-            "User": "vagrant",
-            "Key": ".vagrant/machines/default/virtualbox/private_key"
+            "Port": 2223,
+            "User": "root",
+            "Key": "docker/ssh-key",
+            "Destination": "PCAPs/local_target_2",
+            "File Pattern": "trace",
+            "File Rotation Count": 10
         }
     ]
 

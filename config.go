@@ -53,23 +53,23 @@ func getClientConfig(t *target) (*ssh.ClientConfig, *string, error) {
 	}
 
 	if t.User == nil {
-		return nil, nil, errors.New("Missing user in configuration")
+		return nil, nil, fmt.Errorf("Missing user for target <%s> in configuration", *t.Name)
 	}
 
 	if t.Key == nil {
-		return nil, nil, errors.New("Missing authentication method in configuration - provide Password or/and private key")
+		return nil, nil, fmt.Errorf("Missing Key path for target <%s> in configuration", *t.Name)
 	}
 
 	if t.Host == nil {
-		return nil, nil, errors.New("Missing host in configuration")
+		return nil, nil, fmt.Errorf("Missing Host for target <%s> in configuration", *t.Name)
 	}
 
 	if t.Port == nil {
-		return nil, nil, errors.New("Missing port in configuration")
+		return nil, nil, fmt.Errorf("Missing port for target <%s> in configuration", *t.Name)
 	}
 
 	if t.Destination == nil {
-		return nil, nil, fmt.Errorf("Missing destination for target <%s>", *t.Name)
+		return nil, nil, fmt.Errorf("Missing destination for target <%s> in configuration", *t.Name)
 	}
 
 	if t.FilePattern == nil {
@@ -80,6 +80,10 @@ func getClientConfig(t *target) (*ssh.ClientConfig, *string, error) {
 		fmt.Printf("File Rotation Count not set for target <%s>. Setting to 10.\n", *t.Name)
 		t.RotationCnt = new(int)
 		*t.RotationCnt = 10
+	}
+
+	if *t.RotationCnt < 0 {
+		return nil, nil, fmt.Errorf("Invalid rotation count for target <%s> (%d)", *t.Name, *t.RotationCnt)
 	}
 
 	dest := fmt.Sprintf("%s:%d", *t.Host, *t.Port)

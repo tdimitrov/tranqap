@@ -40,7 +40,7 @@ type Tcpdump struct {
 
 // NewTcpdump creates Tcpdump Capturer
 func NewTcpdump(dest string, config *ssh.ClientConfig, outer *output.MultiOutput) Capturer {
-	const captureCmd = "sudo tcpdump -U -s0 -w - 'ip and not port 22'"
+	const captureCmd = "tcpdump -U -s0 -w - 'ip and not port 22'"
 	return &Tcpdump{
 		dest,
 		*config,
@@ -84,7 +84,8 @@ func (capt *Tcpdump) Stop() bool {
 	results := make(chan int, 2)
 	sess.Stdout = shell.NewKillPidHandler(results)
 
-	err = sess.Start(shell.CmdKillPid(capt.pid.Get()))
+	pid := capt.pid.Get()
+	err = sess.Start(shell.CmdKillPid(pid))
 	if err != nil {
 		fmt.Println("Error running stop command!")
 		return false
@@ -96,9 +97,9 @@ func (capt *Tcpdump) Stop() bool {
 	r2 := <-results
 
 	if r1 != 0 {
-		fmt.Println("Process is not running")
+		fmt.Printf("Process %d is not running\n", pid)
 	} else if r2 == 0 {
-		fmt.Println("Process is not responding")
+		fmt.Printf("Process %d is not responding\n", pid)
 	}
 
 	capt.out.Close()

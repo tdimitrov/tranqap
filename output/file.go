@@ -14,8 +14,8 @@ type fileOutput struct {
 }
 
 // NewFileOutput constructs fileOutput object
-func NewFileOutput(fname string) Outputer {
-	fd, err := openFile(fname)
+func NewFileOutput(destDir string, filePattern string, rotationCnt int) Outputer {
+	fd, err := openFile(destDir, filePattern, rotationCnt)
 	if err != nil {
 		return nil
 	}
@@ -37,8 +37,14 @@ func (pw *fileOutput) Close() {
 	pw.fd.Close()
 }
 
-func openFile(filePath string) (*os.File, error) {
-	const MaxFileCount int = 10
+func openFile(destDir string, filePattern string, rotationCnt int) (*os.File, error) {
+	// If destination dir doesn't exist - create it
+	err := prepareDestDir(destDir)
+	if err != nil {
+		return nil, err
+	}
+
+	filePath := destDir + "/" + filePattern + ".pcap"
 
 	// If file does not exist - create it and return
 	if !fileExists(filePath) {
@@ -55,7 +61,7 @@ func openFile(filePath string) (*os.File, error) {
 	basename := strings.Replace(filePath, ext, "", 1)
 
 	// Remove the last file
-	lastFile := fmt.Sprintf("%s.%d%s", basename, MaxFileCount, ext)
+	lastFile := fmt.Sprintf("%s.%d%s", basename, rotationCnt, ext)
 	if fileExists(lastFile) {
 		err := os.Remove(lastFile)
 		if err != nil {
@@ -65,7 +71,7 @@ func openFile(filePath string) (*os.File, error) {
 	}
 
 	// Shift the rest
-	for n := MaxFileCount; n > 1; n-- {
+	for n := rotationCnt; n > 1; n-- {
 		old := basename + "." + strconv.Itoa(n-1) + ext
 		if fileExists(old) {
 			new := basename + "." + strconv.Itoa(n) + ext
@@ -102,4 +108,25 @@ func fileExists(path string) bool {
 	}
 
 	return false
+}
+
+func prepareDestDir(destDir string) error {
+	fi, err := os.Stat(destDir)
+
+	if os.IsNotExist(err) {
+		// Destination doesn't exist - create it
+		err = os.MkdirAll(destDir, 0755)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}
+
+	if fi.IsDir() {
+		// Destination exists and is a DIR
+		return nil
+	}
+
+	return fmt.Errorf("Destination dir path (%s) points to a file", destDir)
 }

@@ -11,7 +11,7 @@ import (
 // 2. Send signal 0 to the same pid, to be sure that the process has terminated
 // 3. Returns the result codes from both command to the caller via stdout
 func CmdKillPid(pid int) string {
-	return fmt.Sprintf("sudo kill %d ; R1=$?; kill -0 %d; R2=$?; echo $R1 $R2", pid, pid)
+	return fmt.Sprintf("kill %d ; R1=$?; kill -0 %d; R2=$?; echo $R1 $R2", pid, pid)
 }
 
 type killPidHandler struct {

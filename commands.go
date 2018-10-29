@@ -38,33 +38,33 @@ func cmdStart() int {
 	for _, t := range config.Targets {
 		c, d, err := getClientConfig(&t)
 		if err != nil {
-			fmt.Println("Error parsing client configuration. ", err)
+			fmt.Printf("Error parsing client configuration for target <%s>: %s\n", *t.Name, err)
 			return cmdErr
 		}
 
 		// Create file output
-		f := output.NewFileOutput("test.pcap")
+		f := output.NewFileOutput(*t.Destination, *t.FilePattern, *t.RotationCnt)
 		if f == nil {
-			fmt.Println("Can't create File output.")
+			fmt.Printf("Can't create File output for target <%s>\n", *t.Name)
 			return cmdErr
 		}
 
 		// Create multioutput and attach the file output to it
 		m := output.NewMultiOutput(f)
 		if m == nil {
-			fmt.Println("Can't create Multi output.")
+			fmt.Printf("Can't create MultiOutput for target <%s\n.", *t.Name)
 			return cmdErr
 		}
 
 		// Create capturer
 		capt := capture.NewTcpdump(*d, c, m)
 		if capt == nil {
-			fmt.Println("Error creating capturer.")
+			fmt.Printf("Error creating Capturer for target <%s>\n", *t.Name)
 			return cmdErr
 		}
 
 		if capt.Start() == false {
-			fmt.Println("Error starting capture")
+			fmt.Printf("Error starting Capturer for target <%s>\n", *t.Name)
 			return cmdErr
 		}
 
