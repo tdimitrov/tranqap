@@ -26,8 +26,8 @@ type getPidHandler struct {
 // It reads a PID from the buffer, passed to Write(). pidOutput is used to parse
 // the PID of the capturer so that it can be stopped on user request.
 // It's input parameter is a channel, used to return the PID as an integer
-func NewGetPidHandler(pid chan<- int) (CmdHandler, error) {
-	return getPidHandler{pid}, nil
+func NewGetPidHandler(pid chan<- int) CmdHandler {
+	return getPidHandler{pid}
 }
 
 func (pw getPidHandler) Write(p []byte) (n int, err error) {
@@ -39,13 +39,15 @@ func (pw getPidHandler) Write(p []byte) (n int, err error) {
 		pid, err := strconv.Atoi(strings.Trim(data, "\n\t "))
 		if err != nil {
 			fmt.Println("Expected PID, received", data)
+			pid = -1
 		}
 
 		pw.result <- pid
 		close(pw.result)
 	} else {
-		// It's something else. Log it on the screen
-		fmt.Println(data)
+		// Prefix not found in response. Log it
+		fmt.Println("pidPrefix not found in response, received", data)
+		pw.result <- -1
 	}
 
 	return len(p), nil

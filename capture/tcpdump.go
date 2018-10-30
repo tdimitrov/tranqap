@@ -122,7 +122,7 @@ func (capt *Tcpdump) startSession() bool {
 	chanPid := make(chan int)
 
 	capt.session.Stdout = capt.out
-	capt.session.Stderr, _ = shell.NewGetPidHandler(chanPid)
+	capt.session.Stderr = shell.NewGetPidHandler(chanPid)
 
 	err = capt.session.Start(capt.captureCmd)
 	if err != nil {
