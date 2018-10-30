@@ -81,7 +81,7 @@ func (capt *Tcpdump) Stop() bool {
 
 	defer sess.Close()
 
-	results := make(chan int, 2)
+	results := make(chan int, 1)
 	sess.Stdout = shell.NewKillPidHandler(results)
 
 	pid := capt.pid.Get()
@@ -93,13 +93,8 @@ func (capt *Tcpdump) Stop() bool {
 
 	sess.Wait()
 
-	r1 := <-results
-	r2 := <-results
-
-	if r1 != 0 {
-		fmt.Printf("Process %d is not running\n", pid)
-	} else if r2 == 0 {
-		fmt.Printf("Process %d is not responding\n", pid)
+	if r := <-results; r != shell.EvKillSuccess {
+		fmt.Printf("Error killing PID %d: %s\n", pid, shell.KillResToStr(r))
 	}
 
 	capt.out.Close()

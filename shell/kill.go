@@ -11,11 +11,43 @@ import (
 // 2. Send signal 0 to the same pid, to be sure that the process has terminated
 // 3. Returns the result codes from both command to the caller via stdout
 func CmdKillPid(pid int) string {
-	return fmt.Sprintf("kill %d ; R1=$?; kill -0 %d; R2=$?; echo $R1 $R2", pid, pid)
+	return fmt.Sprintf("kill %d ; R1=$?; sleep 0.1; kill -0 %d; R2=$?; echo $R1 $R2", pid, pid)
+}
+
+const (
+	// EvKillSuccess is returned when the process is killed successfully. R1=0; R2=NonZero
+	EvKillSuccess = iota
+	// EvKillNotRuning is returned when the process that should be killed is not runnung
+	EvKillNotRuning = iota
+	// EvKillNotResponding is returned when the process is running, but doesn't die after the kill command
+	EvKillNotResponding = iota
+	// EvKillError is returned when the process is not running, but the 2nd kill doesn't return error.
+	// This could happen in very strange circumstances.
+	EvKillError = iota
+	// EvKillExecError is returned when result from the bash command is malformed.
+	EvKillExecError = iota
+)
+
+// KillResToStr returns a string with the description of the error code used by CmdKillPid (described in the consts above)
+func KillResToStr(res int) string {
+	switch res {
+	case EvKillError:
+		return "Unknown error"
+	case EvKillNotResponding:
+		return "PID not responding"
+	case EvKillNotRuning:
+		return "PID not running"
+	case EvKillSuccess:
+		return "Success (no error)"
+	case EvKillExecError:
+		return "Execution error"
+	}
+
+	return "Unknown error code"
 }
 
 type killPidHandler struct {
-	result chan<- int
+	result chan<- int // Sends EvKill*** from the consts above
 }
 
 // NewKillPidHandler creates new killOutput instance.
@@ -30,8 +62,7 @@ func (pw killPidHandler) Write(p []byte) (n int, err error) {
 
 	results := strings.Split(data, " ")
 	if len(results) != 2 {
-		pw.result <- -1
-		pw.result <- -1
+		pw.result <- EvKillExecError
 		close(pw.result)
 
 		return len(p), nil
@@ -47,12 +78,28 @@ func (pw killPidHandler) Write(p []byte) (n int, err error) {
 		r2 = -1
 	}
 
-	pw.result <- r1
-	pw.result <- r2
+	pw.sendResult(r1, r2)
 
 	close(pw.result)
 
 	return len(p), nil
+}
+
+func (pw killPidHandler) sendResult(r1, r2 int) {
+	if r1 == 0 {
+		if r2 == 0 {
+			pw.result <- EvKillNotResponding
+		} else {
+			pw.result <- EvKillSuccess
+		}
+	} else {
+		if r2 == 0 {
+			pw.result <- EvKillError
+		} else {
+			pw.result <- EvKillNotRuning
+		}
+
+	}
 }
 
 func (pw killPidHandler) Close() {
