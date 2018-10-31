@@ -96,11 +96,6 @@ func (mo *MultiOutput) Close() {
 	}
 }
 
-// GetEventsChan returns the channel used by the MultiOutput instance for event handling
-func (mo *MultiOutput) GetEventsChan() chan MultiOutputEvent {
-	return mo.events
-}
-
 // AddMember adds new Outputer to the members slice
 func (mo *MultiOutput) AddMember(newOutFn OutputerFactory) error {
 	mo.membersMut.Lock()
