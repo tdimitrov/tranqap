@@ -5,8 +5,9 @@ RUN apt-get update && apt-get install -y openssh-server tcpdump
 RUN mkdir /var/run/sshd
 
 # Authentication
-RUN echo 'root:secret' | chpasswd
-ADD ssh-key.pub /root/.ssh/authorized_keys
+RUN useradd -ms /bin/bash rpcap
+ADD ssh-key.pub /home/rpcap/.ssh/authorized_keys
+RUN chown -R rpcap:rpcap /home/rpcap/.ssh/
 
 RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 
