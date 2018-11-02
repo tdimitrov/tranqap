@@ -13,14 +13,16 @@ const (
 	cmdExit = iota
 )
 
-var capturers capture.Storage
+var capturers *capture.Storage
 
 func cmdStart() int {
 	// Check if there is a running job
-	if capturers.Count() != 0 {
+	if capturers != nil {
 		fmt.Println("There is already a running capture.")
 		return cmdErr
 	}
+
+	capturers = capture.NewStorage()
 
 	// Get configuration
 	config, err := getConfig("config.json")
@@ -57,7 +59,7 @@ func cmdStart() int {
 		}
 
 		// Create capturer
-		capt := capture.NewTcpdump(*d, c, m)
+		capt := capture.NewTcpdump(*d, c, m, capturers.GetChan())
 		if capt == nil {
 			fmt.Printf("Error creating Capturer for target <%s>\n", *t.Name)
 			return cmdErr
@@ -76,14 +78,14 @@ func cmdStart() int {
 
 func cmdStop() int {
 	// Check if there is a running job
-	if capturers.Count() == 0 {
+	if capturers == nil {
 		fmt.Println("There are no running captures.")
 		return cmdErr
 	}
 
 	capturers.StopAll()
 
-	capturers.Clear()
+	capturers = nil
 
 	return cmdOk
 }

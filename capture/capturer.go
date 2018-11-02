@@ -5,6 +5,24 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
+const (
+	// CapturerDead is generated to the Storage when
+	// the Capturer process (e.g. tcpdump) dies
+	CapturerDead = iota
+)
+
+// CapturerEvent represents the structure of the event generated from Capturer
+// to Storage. It has got two parameters:
+// from - the address of the Capturer struct in memory. It is used to identify the Capturer
+// event - the type of the event. This value should be equal on one of the consts above.
+type CapturerEvent struct {
+	from  Capturer
+	event int
+}
+
+// CapturerEventChan is the type of the channel used by MultiOutput for event handling
+type CapturerEventChan chan CapturerEvent
+
 // Capturer interface represents a general capturer. There are concrete implementations
 // for tcpdump. In the future more can be added, e.g. tshark, dumpcap, etc.
 type Capturer interface {

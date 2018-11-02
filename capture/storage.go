@@ -9,16 +9,23 @@ import (
 
 // Storage is a thread safe container for Capturers.
 type Storage struct {
-	capturers []Capturer
-	mut       sync.Mutex
+	capturers   []Capturer
+	mut         sync.Mutex
+	events      CapturerEventChan
+	handlerDone chan struct{}
 }
 
-// Count returns the number of Capturers in the container
-func (c *Storage) Count() int {
-	c.mut.Lock()
-	defer c.mut.Unlock()
+// NewStorage creates a Storage instance
+func NewStorage() *Storage {
+	ret := &Storage{[]Capturer{}, sync.Mutex{}, make(CapturerEventChan, 1), make(chan struct{})}
+	go ret.eventHandler()
 
-	return len(c.capturers)
+	return ret
+}
+
+// GetChan returns the channel used for events
+func (c *Storage) GetChan() CapturerEventChan {
+	return c.events
 }
 
 // Add appends new Capturer to the container
@@ -37,14 +44,10 @@ func (c *Storage) StopAll() {
 	for _, c := range c.capturers {
 		c.Stop()
 	}
-}
 
-// Clear removes all Capturers from the container. Don't forget to call StopAll() before it
-func (c *Storage) Clear() {
-	c.mut.Lock()
-	defer c.mut.Unlock()
+	close(c.events)
 
-	c.capturers = c.capturers[:0]
+	<-c.handlerDone
 }
 
 // AddNewOutput adds new Outputer to each capturer
@@ -58,4 +61,20 @@ func (c *Storage) AddNewOutput(factFn output.OutputerFactory) {
 			fmt.Println("Error adding Outputer")
 		}
 	}
+}
+
+func (c *Storage) eventHandler() {
+	for e := range c.events {
+		c.mut.Lock()
+
+		for i, capt := range c.capturers {
+			if capt == e.from {
+				c.capturers = append(c.capturers[:i], c.capturers[i+1:]...)
+				break
+			}
+		}
+		c.mut.Unlock()
+	}
+
+	c.handlerDone <- struct{}{}
 }

@@ -36,10 +36,11 @@ type Tcpdump struct {
 	session    *ssh.Session
 	pid        atomicPid
 	out        *output.MultiOutput
+	onDie      CapturerEventChan
 }
 
 // NewTcpdump creates Tcpdump Capturer
-func NewTcpdump(dest string, config *ssh.ClientConfig, outer *output.MultiOutput) Capturer {
+func NewTcpdump(dest string, config *ssh.ClientConfig, outer *output.MultiOutput, subsc CapturerEventChan) Capturer {
 	const captureCmd = "tcpdump -U -s0 -w - 'ip and not port 22'"
 	return &Tcpdump{
 		dest,
@@ -49,6 +50,7 @@ func NewTcpdump(dest string, config *ssh.ClientConfig, outer *output.MultiOutput
 		nil,
 		atomicPid{},
 		outer,
+		subsc,
 	}
 }
 
@@ -133,6 +135,8 @@ func (capt *Tcpdump) startSession() bool {
 	capt.pid.Set(<-chanPid)
 
 	capt.session.Wait()
+
+	capt.onDie <- CapturerEvent{capt, CapturerDead}
 
 	return true
 }
