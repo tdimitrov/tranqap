@@ -115,6 +115,8 @@ func processCmd(cmd string) int {
 
 	case "wireshark":
 		return cmdWireshark()
+	case "":
+		return cmdOk
 
 	default:
 		fmt.Println("No such command", cmd)

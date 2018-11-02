@@ -22,7 +22,7 @@ func main() {
 			break
 		}
 
-		if processCmd(strings.TrimSuffix(command, "\n")) == cmdExit {
+		if processCmd(strings.TrimSpace(strings.TrimSuffix(command, "\n"))) == cmdExit {
 			capturers.StopAll()
 			break
 		}
