@@ -93,6 +93,9 @@ func (capt *Tcpdump) Stop() bool {
 		return false
 	}
 
+	// Clear PID to indicate an expected kill
+	capt.pid.Set(-1)
+
 	sess.Wait()
 
 	if r := <-results; r != shell.EvKillSuccess {
@@ -136,7 +139,12 @@ func (capt *Tcpdump) startSession() bool {
 
 	capt.session.Wait()
 
-	capt.onDie <- CapturerEvent{capt, CapturerDead}
+	if capt.pid.Get() != -1 {
+		// PID is not cleared - this is unexpected stop
+		capt.onDie <- CapturerEvent{capt, CapturerDead}
+	} else {
+		capt.onDie <- CapturerEvent{capt, CapturerStopped}
+	}
 
 	return true
 }

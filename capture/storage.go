@@ -38,6 +38,11 @@ func (c *Storage) Add(newCapt Capturer) {
 
 // StopAll calls Stop() on each Capturer in the container
 func (c *Storage) StopAll() {
+	if c == nil {
+		//Can be called on a nil pointer
+		return
+	}
+
 	c.mut.Lock()
 	defer c.mut.Unlock()
 
@@ -70,6 +75,10 @@ func (c *Storage) eventHandler() {
 		for i, capt := range c.capturers {
 			if capt == e.from {
 				c.capturers = append(c.capturers[:i], c.capturers[i+1:]...)
+
+				if e.event == CapturerDead {
+					fmt.Println("Capturer died unexpectedly")
+				}
 				break
 			}
 		}

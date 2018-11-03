@@ -6,9 +6,10 @@ import (
 )
 
 const (
-	// CapturerDead is generated to the Storage when
-	// the Capturer process (e.g. tcpdump) dies
+	// CapturerDead means that the Capturer has stopped unexpectedly
 	CapturerDead = iota
+	// CapturerStopped means the Capturer has been stopped by command
+	CapturerStopped = iota
 )
 
 // CapturerEvent represents the structure of the event generated from Capturer
