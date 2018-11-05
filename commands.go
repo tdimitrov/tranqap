@@ -31,12 +31,6 @@ func cmdStart() int {
 		return cmdErr
 	}
 
-	// Create SSH client config and destination from configuration
-	if len(config.Targets) == 0 {
-		fmt.Println("No targets defined in config.")
-		return cmdErr
-	}
-
 	for _, t := range config.Targets {
 		c, d, err := getClientConfig(&t)
 		if err != nil {

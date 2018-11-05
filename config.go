@@ -30,14 +30,16 @@ func getConfig(fname string) (config, error) {
 
 	confFile, err := ioutil.ReadFile(fname)
 	if err != nil {
-		msg := fmt.Sprintf("Error opening %s: %s\n", fname, err.Error())
-		return conf, errors.New(msg)
+		return conf, fmt.Errorf("Error opening %s: %s", fname, err.Error())
 	}
 
 	err = json.Unmarshal(confFile, &conf)
 	if err != nil {
-		msg := fmt.Sprintf("Error parsing %s: %s\n", fname, err.Error())
-		return conf, errors.New(msg)
+		return conf, fmt.Errorf("Error parsing %s: %s", fname, err.Error())
+	}
+
+	if len(conf.Targets) == 0 {
+		return conf, fmt.Errorf("No targets defined in config")
 	}
 
 	return conf, nil
