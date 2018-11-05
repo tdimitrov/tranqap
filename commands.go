@@ -5,6 +5,7 @@ import (
 
 	"github.com/tdimitrov/rpcap/capture"
 	"github.com/tdimitrov/rpcap/output"
+	"github.com/tdimitrov/rpcap/shell"
 )
 
 const (
@@ -95,6 +96,31 @@ func cmdWireshark() int {
 	return cmdOk
 }
 
+func cmdCheckTargets() int {
+	// Get configuration
+	config, err := getConfig("config.json")
+	if err != nil {
+		fmt.Println("Error loading configuration. ", err)
+		return cmdErr
+	}
+
+	for _, t := range config.Targets {
+		c, d, err := getClientConfig(&t)
+		if err != nil {
+			fmt.Printf("Error parsing client configuration for target <%s>: %s\n", *t.Name, err)
+			return cmdErr
+		}
+
+		fmt.Printf("=== Running checks for target <%s> ===\n", *t.Name)
+		if shell.CheckPermissions(c, *d) == false {
+			return cmdErr
+		}
+		fmt.Println("=========================")
+	}
+
+	return cmdOk
+}
+
 func processCmd(cmd string) int {
 	switch cmd {
 	case "exit":
@@ -111,6 +137,10 @@ func processCmd(cmd string) int {
 
 	case "wireshark":
 		return cmdWireshark()
+
+	case "check targets":
+		return cmdCheckTargets()
+
 	case "":
 		return cmdOk
 
