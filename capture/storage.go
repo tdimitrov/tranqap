@@ -75,10 +75,6 @@ func (c *Storage) eventHandler() {
 		for i, capt := range c.capturers {
 			if capt == e.from {
 				c.capturers = append(c.capturers[:i], c.capturers[i+1:]...)
-
-				if e.event == CapturerDead {
-					fmt.Println("Capturer died unexpectedly")
-				}
 				break
 			}
 		}
