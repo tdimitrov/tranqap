@@ -8,8 +8,13 @@ import (
 	"strings"
 )
 
+var logger *LogFile
+
 func main() {
 	go handleSIGINT()
+
+	logger = NewLogFile("rpcap.log")
+	logger.Info("Program started.")
 
 	reader := bufio.NewReader(os.Stdin)
 	for {
