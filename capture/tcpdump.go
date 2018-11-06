@@ -42,10 +42,13 @@ type Tcpdump struct {
 // NewTcpdump creates Tcpdump Capturer
 func NewTcpdump(dest string, config *ssh.ClientConfig, outer *output.MultiOutput, subsc CapturerEventChan) Capturer {
 	const captureCmd = "tcpdump -U -s0 -w - 'ip and not port 22'"
+	const runInBackground = " & "
+	const stderrToDevNull = " 2> /dev/null "
+
 	return &Tcpdump{
 		dest,
 		*config,
-		captureCmd + shell.StderrToDevNull + shell.RunInBackground + shell.CmdGetPid(),
+		captureCmd + stderrToDevNull + runInBackground + shell.CmdGetPid(),
 		nil,
 		nil,
 		atomicPid{},
