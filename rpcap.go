@@ -6,15 +6,18 @@ import (
 	"os"
 	"os/signal"
 	"strings"
-)
 
-var logger *LogFile
+	"github.com/tdimitrov/rpcap/rplog"
+)
 
 func main() {
 	go handleSIGINT()
 
-	logger = NewLogFile("rpcap.log")
-	logger.Info("Program started.")
+	if err := rplog.Init("rpcap.log"); err != nil {
+		fmt.Printf("Error initialising logger: %s\nLog file won't be generated", err)
+	}
+
+	rplog.Info("Program started.")
 
 	reader := bufio.NewReader(os.Stdin)
 	for {
