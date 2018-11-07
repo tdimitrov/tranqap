@@ -18,7 +18,7 @@ var capturers *capture.Storage
 func cmdStart() int {
 	// Check if there is a running job
 	if capturers != nil {
-		rplog.Error("There is already a running capture.")
+		rplog.Error("main.cmdStart: There is already a running capture.")
 		return cmdErr
 	}
 
@@ -27,40 +27,40 @@ func cmdStart() int {
 	// Get configuration
 	config, err := getConfig("config.json")
 	if err != nil {
-		rplog.Error("Error loading configuration. ", err)
+		rplog.Error("main.cmdStart: Error loading configuration. ", err)
 		return cmdErr
 	}
 
 	for _, t := range config.Targets {
 		c, d, err := getClientConfig(&t)
 		if err != nil {
-			rplog.Error("Error parsing client configuration for target <%s>: %s\n", *t.Name, err)
+			rplog.Error("main.cmdStart: Error parsing client configuration for target <%s>: %s\n", *t.Name, err)
 			return cmdErr
 		}
 
 		// Create file output
 		f := output.NewFileOutput(*t.Destination, *t.FilePattern, *t.RotationCnt)
 		if f == nil {
-			rplog.Error("Can't create File output for target <%s>\n", *t.Name)
+			rplog.Error("main.cmdStart: Can't create File output for target <%s>\n", *t.Name)
 			return cmdErr
 		}
 
 		// Create multioutput and attach the file output to it
 		m := output.NewMultiOutput(f)
 		if m == nil {
-			rplog.Error("Can't create MultiOutput for target <%s\n.", *t.Name)
+			rplog.Error("main.cmdStart: Can't create MultiOutput for target <%s\n.", *t.Name)
 			return cmdErr
 		}
 
 		// Create capturer
 		capt := capture.NewTcpdump(*d, c, m, capturers.GetChan())
 		if capt == nil {
-			rplog.Error("Error creating Capturer for target <%s>\n", *t.Name)
+			rplog.Error("main.cmdStart: Error creating Capturer for target <%s>\n", *t.Name)
 			return cmdErr
 		}
 
 		if capt.Start() == false {
-			rplog.Error("Error starting Capturer for target <%s>\n", *t.Name)
+			rplog.Error("main.cmdStart: Error starting Capturer for target <%s>\n", *t.Name)
 			return cmdErr
 		}
 
@@ -73,7 +73,7 @@ func cmdStart() int {
 func cmdStop() int {
 	// Check if there is a running job
 	if capturers == nil {
-		rplog.Error("There are no running captures.")
+		rplog.Error("main.cmdStop: There are no running captures.")
 		return cmdErr
 	}
 
@@ -121,7 +121,7 @@ func cmdCheckTargets() int {
 }
 
 func processCmd(cmd string) int {
-	rplog.Info("Executed %s command", cmd)
+	rplog.Info("main.processCmd: Executed %s command", cmd)
 	switch cmd {
 	case "exit":
 		return cmdExit

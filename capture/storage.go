@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/tdimitrov/rpcap/rplog"
+
 	"github.com/tdimitrov/rpcap/output"
 )
 
@@ -40,8 +42,11 @@ func (c *Storage) Add(newCapt Capturer) {
 func (c *Storage) StopAll() {
 	if c == nil {
 		//Can be called on a nil pointer
+		rplog.Info("capture.Storage: StopAll() called on a nil instance")
 		return
 	}
+
+	rplog.Info("capture.Storage: Stopping all capturers")
 
 	c.mut.Lock()
 	defer c.mut.Unlock()
@@ -50,9 +55,13 @@ func (c *Storage) StopAll() {
 		c.Stop()
 	}
 
+	rplog.Info("capture.Storage: Closing events channel")
 	close(c.events)
 
+	rplog.Info("capture.Storage: Waiting for confirmation")
 	<-c.handlerDone
+
+	rplog.Info("capture.Storage: All capturers are now stopped")
 }
 
 // AddNewOutput adds new Outputer to each capturer
@@ -69,11 +78,12 @@ func (c *Storage) AddNewOutput(factFn output.OutputerFactory) {
 }
 
 func (c *Storage) eventHandler() {
+	rplog.Info("capture.Storage: Starting eventHandler main loop")
 	for e := range c.events {
 		c.mut.Lock()
-
 		for i, capt := range c.capturers {
 			if capt == e.from {
+				rplog.Info("capture.Storage: eventHandler got an event from a capturer")
 				c.capturers = append(c.capturers[:i], c.capturers[i+1:]...)
 				break
 			}
@@ -81,5 +91,6 @@ func (c *Storage) eventHandler() {
 		c.mut.Unlock()
 	}
 
+	rplog.Info("capture.Storage: events channel closed. Exited from eventHandler main loop")
 	c.handlerDone <- struct{}{}
 }

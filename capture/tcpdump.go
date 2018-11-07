@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/tdimitrov/rpcap/output"
+	"github.com/tdimitrov/rpcap/rplog"
 	"github.com/tdimitrov/rpcap/shell"
 	"golang.org/x/crypto/ssh"
 )
@@ -61,7 +62,7 @@ func (capt *Tcpdump) Start() bool {
 func (capt *Tcpdump) Stop() bool {
 	sess, err := capt.client.NewSession()
 	if err != nil {
-		fmt.Println("Error creating session for stop command!")
+		rplog.Error("capture.Tcpdump: Error creating session for Stop()")
 		return false
 	}
 
@@ -73,7 +74,7 @@ func (capt *Tcpdump) Stop() bool {
 	pid := capt.pid.GetPid()
 	err = sess.Start(shell.CmdKillPid(pid))
 	if err != nil {
-		fmt.Println("Error running stop command!")
+		rplog.Error("capture.Tcpdump: Error starting KillPid command!")
 		return false
 	}
 
@@ -83,11 +84,12 @@ func (capt *Tcpdump) Stop() bool {
 	sess.Wait()
 
 	if r := <-results; r != shell.EvKillSuccess {
-		fmt.Printf("Error killing PID %d: %s\n", pid, shell.KillResToStr(r))
+		rplog.Error("capture.Tcpdump: Error killing PID %d: %s\n", pid, shell.KillResToStr(r))
 	}
 
 	capt.out.Close()
 
+	rplog.Info("capture.Tcpdump: Kill successful")
 	return true
 }
 
@@ -122,9 +124,10 @@ func (capt *Tcpdump) startSession() bool {
 	if capt.pid.GetPid() != -1 {
 		// PID is not cleared - this is unexpected stop
 		capt.onDie <- CapturerEvent{capt, CapturerDead}
-		fmt.Println("Capturer died unexpectedly. Dumping stderr:")
+		rplog.Error("capture.Tcpdump: Capturer died unexpectedly. Dumping stderr:")
 		capt.pid.DumpStdErr()
 	} else {
+		rplog.Info("capture.Tcpdump: Capturer killed by command")
 		capt.onDie <- CapturerEvent{capt, CapturerStopped}
 	}
 
