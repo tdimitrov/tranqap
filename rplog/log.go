@@ -17,7 +17,7 @@ var rpcapLog *LogFile
 
 // Init bootstraps the logger
 func Init(fname string) error {
-	f, err := os.OpenFile(fname, os.O_RDWR|os.O_CREATE, 0644)
+	f, err := os.OpenFile(fname, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
 	if err != nil {
 		return fmt.Errorf("Error opening log file %s: %s", fname, err)
 	}
