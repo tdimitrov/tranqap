@@ -44,14 +44,14 @@ func NewTcpdump(name string, dest string, config *ssh.ClientConfig, outer *outpu
 // Start method connects the ssh client to the destination and start capturing
 func (capt *Tcpdump) Start() bool {
 	if capt.session != nil || capt.client != nil {
-		rplog.Error("There is an active session for this capture")
+		rplog.Error("There is an active session for capturer %s", capt.Name())
 		return false
 	}
 
 	var err error
 	capt.client, err = connect(capt.dest, &capt.config)
 	if err != nil {
-		rplog.Error("Error connecting: ", err)
+		rplog.Error("Error connecting to target %s: %s", capt.Name(), err)
 		return false
 	}
 
@@ -64,7 +64,7 @@ func (capt *Tcpdump) Start() bool {
 func (capt *Tcpdump) Stop() bool {
 	sess, err := capt.client.NewSession()
 	if err != nil {
-		rplog.Error("capture.Tcpdump: Error creating session for Stop()")
+		rplog.Error("capture.Tcpdump: Error creating session for Stop() for capturer %s", capt.Name())
 		return false
 	}
 
@@ -76,7 +76,7 @@ func (capt *Tcpdump) Stop() bool {
 
 	err = sess.Start(fmt.Sprintf("kill %d", pid))
 	if err != nil {
-		rplog.Error("capture.Tcpdump: Error starting kill command!")
+		rplog.Error("capture.Tcpdump: Error starting kill command for capturer %s", capt.Name())
 		return false
 	}
 
@@ -84,7 +84,7 @@ func (capt *Tcpdump) Stop() bool {
 
 	capt.out.Close()
 
-	rplog.Info("capture.Tcpdump: Kill executed successfully")
+	rplog.Info("capture.Tcpdump: Kill executed successfully for capturer %s", capt.Name())
 	return true
 }
 
@@ -98,7 +98,7 @@ func (capt *Tcpdump) startSession() bool {
 	var err error
 	capt.session, err = capt.client.NewSession()
 	if err != nil {
-		rplog.Error("Error creating session!")
+		rplog.Error("Error creating initial session for capturer %s", capt.Name())
 		return false
 	}
 
@@ -110,7 +110,7 @@ func (capt *Tcpdump) startSession() bool {
 
 	err = capt.session.Start(capt.captureCmd)
 	if err != nil {
-		rplog.Error("Error running command!")
+		rplog.Error("Error running tcpdum command for capturer %s", capt.Name())
 		return false
 	}
 
@@ -119,10 +119,10 @@ func (capt *Tcpdump) startSession() bool {
 	if capt.pid.GetPid() != -1 {
 		// PID is not cleared - this is unexpected stop
 		capt.onDie <- CapturerEvent{capt, CapturerDead}
-		rplog.Error("capture.Tcpdump: Capturer died unexpectedly. Dumping stderr:")
+		rplog.Error("capture.Tcpdump: Capturer %s died unexpectedly. Dumping stderr:", capt.Name())
 		capt.pid.DumpStdErr()
 	} else {
-		rplog.Info("capture.Tcpdump: Capturer killed by command")
+		rplog.Info("capture.Tcpdump: Capturer %s killed by command", capt.Name())
 		capt.onDie <- CapturerEvent{capt, CapturerStopped}
 	}
 

@@ -52,7 +52,7 @@ func openFile(destDir string, filePattern string, rotationCnt int) (*os.File, er
 	if !fileExists(filePath) {
 		fd, err := os.OpenFile(filePath, os.O_CREATE|os.O_WRONLY, 0755)
 		if err != nil {
-			rplog.Error("Error opening file: ", err)
+			rplog.Error("Error opening file: %s", err)
 			return nil, err
 		}
 		return fd, err

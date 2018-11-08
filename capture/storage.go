@@ -45,7 +45,7 @@ func (c *Storage) StopAll() {
 		return
 	}
 
-	rplog.Info("capture.Storage: Stopping all capturers")
+	rplog.Info("capture.Storage: Calling Stop for each capturer")
 
 	c.mut.Lock()
 	for _, c := range c.capturers {
@@ -67,7 +67,7 @@ func (c *Storage) AddNewOutput(factFn output.OutputerFactory) {
 	for _, c := range c.capturers {
 		err := c.AddOutputer(factFn)
 		if err != nil {
-			rplog.Error("Error adding Outputer")
+			rplog.Error("Error adding Outputer to capturer %s", c.Name())
 		}
 	}
 }
@@ -75,11 +75,11 @@ func (c *Storage) AddNewOutput(factFn output.OutputerFactory) {
 func (c *Storage) eventHandler() {
 	rplog.Info("capture.Storage: Starting eventHandler main loop")
 	for e := range c.events {
-		rplog.Info("capture.Storage: eventHandler got an event from a capturer")
+		rplog.Info("capture.Storage: eventHandler got an event from a capturer %s", e.from.Name())
 		c.mut.Lock()
 		for i, capt := range c.capturers {
 			if capt == e.from {
-				rplog.Info("capture.Storage: Removed capturer")
+				rplog.Info("capture.Storage: Removed capturer %s", e.from.Name())
 				c.capturers = append(c.capturers[:i], c.capturers[i+1:]...)
 				break
 			}
