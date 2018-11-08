@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/tdimitrov/rpcap/rplog"
 )
 
 // pidPrefix is the string, which is put in front of the PID, when it is transmitted over stderr
@@ -45,7 +47,7 @@ func (pw StdErrHandler) Write(p []byte) (n int, err error) {
 		data := strings.Replace(data, pidPrefix, "", 1)
 		pid, err := strconv.Atoi(strings.Trim(data, "\n\t "))
 		if err != nil {
-			fmt.Println("Expected PID, received: ", data)
+			rplog.Info("Expected PID, received: ", data)
 			pid = -1
 		}
 		pw.pidLock.Lock()

@@ -1,7 +1,6 @@
 package capture
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/tdimitrov/rpcap/rplog"
@@ -68,7 +67,7 @@ func (c *Storage) AddNewOutput(factFn output.OutputerFactory) {
 	for _, c := range c.capturers {
 		err := c.AddOutputer(factFn)
 		if err != nil {
-			fmt.Println("Error adding Outputer")
+			rplog.Error("Error adding Outputer")
 		}
 	}
 }

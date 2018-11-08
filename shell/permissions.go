@@ -3,6 +3,8 @@ package shell
 import (
 	"fmt"
 
+	"github.com/tdimitrov/rpcap/rplog"
+
 	"golang.org/x/crypto/ssh"
 )
 
@@ -67,13 +69,13 @@ func cmdPermissions() string {
 func CheckPermissions(c *ssh.ClientConfig, dest string) bool {
 	client, err := ssh.Dial("tcp", dest, c)
 	if err != nil {
-		fmt.Printf("Error connecting: %s\n", err)
+		rplog.Error("Error connecting: %s\n", err)
 		return false
 	}
 
 	sess, err := client.NewSession()
 	if err != nil {
-		fmt.Println("Error creating session!")
+		rplog.Error("Error creating session!")
 		return false
 	}
 
@@ -84,7 +86,7 @@ func CheckPermissions(c *ssh.ClientConfig, dest string) bool {
 
 	err = sess.Start(cmdPermissions())
 	if err != nil {
-		fmt.Println("Error running permissions command")
+		rplog.Error("Error running permissions command")
 		return false
 	}
 

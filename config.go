@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io/ioutil"
 
+	"github.com/tdimitrov/rpcap/rplog"
+
 	"golang.org/x/crypto/ssh"
 )
 
@@ -79,7 +81,7 @@ func getClientConfig(t *target) (*ssh.ClientConfig, *string, error) {
 	}
 
 	if t.RotationCnt == nil {
-		fmt.Printf("File Rotation Count not set for target <%s>. Setting to 10.\n", *t.Name)
+		rplog.Info("File Rotation Count not set for target <%s>. Setting to 10.\n", *t.Name)
 		t.RotationCnt = new(int)
 		*t.RotationCnt = 10
 	}

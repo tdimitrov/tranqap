@@ -42,14 +42,14 @@ func NewTcpdump(dest string, config *ssh.ClientConfig, outer *output.MultiOutput
 // Start method connects the ssh client to the destination and start capturing
 func (capt *Tcpdump) Start() bool {
 	if capt.session != nil || capt.client != nil {
-		fmt.Println("There is an active session for this capture")
+		rplog.Error("There is an active session for this capture")
 		return false
 	}
 
 	var err error
 	capt.client, err = connect(capt.dest, &capt.config)
 	if err != nil {
-		fmt.Println("Error connecting: ", err)
+		rplog.Error("Error connecting: ", err)
 		return false
 	}
 
@@ -96,7 +96,7 @@ func (capt *Tcpdump) startSession() bool {
 	var err error
 	capt.session, err = capt.client.NewSession()
 	if err != nil {
-		fmt.Println("Error creating session!")
+		rplog.Error("Error creating session!")
 		return false
 	}
 
@@ -108,7 +108,7 @@ func (capt *Tcpdump) startSession() bool {
 
 	err = capt.session.Start(capt.captureCmd)
 	if err != nil {
-		fmt.Println("Error running command!")
+		rplog.Error("Error running command!")
 		return false
 	}
 

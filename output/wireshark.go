@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 	"os/exec"
+
+	"github.com/tdimitrov/rpcap/rplog"
 )
 
 type wsharkOutput struct {
@@ -42,7 +44,7 @@ func (pw wsharkOutput) Write(p []byte) (n int, err error) {
 	n, err = pw.stdin.Write(p)
 	if err != nil {
 		msg := fmt.Sprintf("Error writing: %v", err)
-		fmt.Println(msg)
+		rplog.Info(msg)
 		return n, errors.New(msg)
 	}
 	return n, nil
