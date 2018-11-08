@@ -68,28 +68,21 @@ func (capt *Tcpdump) Stop() bool {
 
 	defer sess.Close()
 
-	results := make(chan int, 1)
-	sess.Stdout = shell.NewKillPidHandler(results)
-
 	pid := capt.pid.GetPid()
-	err = sess.Start(shell.CmdKillPid(pid))
-	if err != nil {
-		rplog.Error("capture.Tcpdump: Error starting KillPid command!")
-		return false
-	}
-
 	// Clear PID to indicate an expected kill
 	capt.pid.ClearPid()
 
-	sess.Wait()
-
-	if r := <-results; r != shell.EvKillSuccess {
-		rplog.Error("capture.Tcpdump: Error killing PID %d: %s\n", pid, shell.KillResToStr(r))
+	err = sess.Start(fmt.Sprintf("kill %d", pid))
+	if err != nil {
+		rplog.Error("capture.Tcpdump: Error starting kill command!")
+		return false
 	}
+
+	sess.Wait()
 
 	capt.out.Close()
 
-	rplog.Info("capture.Tcpdump: Kill successful")
+	rplog.Info("capture.Tcpdump: Kill executed successfully")
 	return true
 }
 

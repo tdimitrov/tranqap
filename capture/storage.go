@@ -19,7 +19,7 @@ type Storage struct {
 
 // NewStorage creates a Storage instance
 func NewStorage() *Storage {
-	ret := &Storage{[]Capturer{}, sync.Mutex{}, make(CapturerEventChan, 1), make(chan struct{})}
+	ret := &Storage{[]Capturer{}, sync.Mutex{}, make(CapturerEventChan, 1), make(chan struct{}, 1)}
 	go ret.eventHandler()
 
 	return ret
@@ -49,14 +49,10 @@ func (c *Storage) StopAll() {
 	rplog.Info("capture.Storage: Stopping all capturers")
 
 	c.mut.Lock()
-	defer c.mut.Unlock()
-
 	for _, c := range c.capturers {
 		c.Stop()
 	}
-
-	rplog.Info("capture.Storage: Closing events channel")
-	close(c.events)
+	c.mut.Unlock()
 
 	rplog.Info("capture.Storage: Waiting for confirmation")
 	<-c.handlerDone
@@ -80,17 +76,23 @@ func (c *Storage) AddNewOutput(factFn output.OutputerFactory) {
 func (c *Storage) eventHandler() {
 	rplog.Info("capture.Storage: Starting eventHandler main loop")
 	for e := range c.events {
+		rplog.Info("capture.Storage: eventHandler got an event from a capturer")
 		c.mut.Lock()
 		for i, capt := range c.capturers {
 			if capt == e.from {
-				rplog.Info("capture.Storage: eventHandler got an event from a capturer")
+				rplog.Info("capture.Storage: Removed capturer")
 				c.capturers = append(c.capturers[:i], c.capturers[i+1:]...)
 				break
 			}
 		}
+		capturersCount := len(c.capturers)
 		c.mut.Unlock()
+
+		if capturersCount == 0 {
+			break
+		}
 	}
 
-	rplog.Info("capture.Storage: events channel closed. Exited from eventHandler main loop")
+	rplog.Info("capture.Storage: All capturers are stopped. Exited from eventHandler main loop")
 	c.handlerDone <- struct{}{}
 }
