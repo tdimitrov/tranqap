@@ -53,7 +53,7 @@ func cmdStart() int {
 		}
 
 		// Create capturer
-		capt := capture.NewTcpdump(*d, c, m, capturers.GetChan())
+		capt := capture.NewTcpdump(*t.Name, *d, c, m, capturers.GetChan())
 		if capt == nil {
 			rplog.Error("main.cmdStart: Error creating Capturer for target <%s>\n", *t.Name)
 			return cmdErr

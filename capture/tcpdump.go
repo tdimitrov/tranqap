@@ -11,6 +11,7 @@ import (
 
 // Tcpdump is Capturer implementation for tcpdump
 type Tcpdump struct {
+	name       string
 	dest       string
 	config     ssh.ClientConfig
 	captureCmd string
@@ -22,12 +23,13 @@ type Tcpdump struct {
 }
 
 // NewTcpdump creates Tcpdump Capturer
-func NewTcpdump(dest string, config *ssh.ClientConfig, outer *output.MultiOutput, subsc CapturerEventChan) Capturer {
+func NewTcpdump(name string, dest string, config *ssh.ClientConfig, outer *output.MultiOutput, subsc CapturerEventChan) Capturer {
 	const captureCmd = "tcpdump -U -s0 -w - 'ip and not port 22'"
 	const runInBackground = " & "
 	//const stderrToDevNull = " 2> /dev/null "
 
 	return &Tcpdump{
+		fmt.Sprintf("<%s>", name),
 		dest,
 		*config,
 		captureCmd + runInBackground + shell.CmdGetPid(),
@@ -125,4 +127,9 @@ func (capt *Tcpdump) startSession() bool {
 	}
 
 	return true
+}
+
+// Name returns the name of the capturer's target (used only for logging purposes)
+func (capt *Tcpdump) Name() string {
+	return capt.name
 }

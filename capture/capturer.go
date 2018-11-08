@@ -30,6 +30,7 @@ type Capturer interface {
 	Start() bool
 	Stop() bool
 	AddOutputer(newOutputer output.OutputerFactory) error
+	Name() string
 }
 
 func connect(dest string, clientConfig *ssh.ClientConfig) (*ssh.Client, error) {
