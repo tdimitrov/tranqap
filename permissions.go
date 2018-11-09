@@ -2,17 +2,17 @@ package main
 
 import (
 	"fmt"
-
-	"github.com/tdimitrov/rpcap/rplog"
+	"strings"
 
 	"golang.org/x/crypto/ssh"
 )
 
 type stdOutWriter struct {
+	output *strings.Builder
 }
 
 func (b stdOutWriter) Write(p []byte) (n int, err error) {
-	fmt.Print(string(p))
+	b.output.Write(p)
 	return len(p), nil
 }
 
@@ -66,31 +66,29 @@ func cmdPermissions() string {
 }
 
 // checkPermissions executes a bash function, which checks if tcpdump can be run on a target machine
-func checkPermissions(c *ssh.ClientConfig, dest string) bool {
+func checkPermissions(c *ssh.ClientConfig, dest string) (string, error) {
 	client, err := ssh.Dial("tcp", dest, c)
 	if err != nil {
-		rplog.Error("Error connecting: %s\n", err)
-		return false
+		return "", fmt.Errorf("Error connecting: %s", err)
 	}
 
 	sess, err := client.NewSession()
 	if err != nil {
-		rplog.Error("Error creating session!")
-		return false
+		return "", fmt.Errorf("Error creating SSH session: %s", err)
 	}
 
 	defer sess.Close()
 
-	sess.Stdout = stdOutWriter{}
-	sess.Stderr = stdOutWriter{}
+	out := stdOutWriter{&strings.Builder{}}
+	sess.Stdout = out
+	sess.Stderr = out
 
 	err = sess.Start(cmdPermissions())
 	if err != nil {
-		rplog.Error("Error running permissions command")
-		return false
+		return "", fmt.Errorf("Error running permissions command: %s", err)
 	}
 
 	sess.Wait()
 
-	return true
+	return out.output.String(), nil
 }

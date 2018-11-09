@@ -15,7 +15,8 @@ type LogFile struct {
 
 var rpcapLog *LogFile
 
-// Init bootstraps the logger
+// Init bootstraps the logger. printShell effectively is the ishell instance.
+// It is used to print messages on the screen
 func Init(fname string) error {
 	f, err := os.OpenFile(fname, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
 	if err != nil {
@@ -36,7 +37,6 @@ func (l *LogFile) logError(format string, a ...interface{}) {
 		fmt.Fprintf(&msgFormat, "ERROR: %s", format)
 	}
 
-	fmt.Fprintf(os.Stdout, msgFormat.String(), a...)
 	l.logger.Printf(msgFormat.String(), a...)
 }
 
