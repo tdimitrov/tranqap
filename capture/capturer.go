@@ -2,7 +2,6 @@ package capture
 
 import (
 	"github.com/tdimitrov/rpcap/output"
-	"golang.org/x/crypto/ssh"
 )
 
 const (
@@ -31,14 +30,4 @@ type Capturer interface {
 	Stop() bool
 	AddOutputer(newOutputer output.OutputerFactory) error
 	Name() string
-}
-
-func connect(dest string, clientConfig *ssh.ClientConfig) (*ssh.Client, error) {
-
-	client, err := ssh.Dial("tcp", dest, clientConfig)
-	if err != nil {
-		return client, err
-	}
-
-	return client, nil
 }

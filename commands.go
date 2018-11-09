@@ -4,7 +4,6 @@ import (
 	"github.com/tdimitrov/rpcap/capture"
 	"github.com/tdimitrov/rpcap/output"
 	"github.com/tdimitrov/rpcap/rplog"
-	"github.com/tdimitrov/rpcap/shell"
 )
 
 const (
@@ -111,7 +110,7 @@ func cmdCheckTargets() int {
 		}
 
 		rplog.Error("=== Running checks for target <%s> ===\n", *t.Name)
-		if shell.CheckPermissions(c, *d) == false {
+		if checkPermissions(c, *d) == false {
 			return cmdErr
 		}
 		rplog.Error("=========================")

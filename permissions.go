@@ -1,4 +1,4 @@
-package shell
+package main
 
 import (
 	"fmt"
@@ -65,8 +65,8 @@ func cmdPermissions() string {
 	return cmd
 }
 
-// CheckPermissions executes a bash function, which checks if tcpdump can be run on a target machine
-func CheckPermissions(c *ssh.ClientConfig, dest string) bool {
+// checkPermissions executes a bash function, which checks if tcpdump can be run on a target machine
+func checkPermissions(c *ssh.ClientConfig, dest string) bool {
 	client, err := ssh.Dial("tcp", dest, c)
 	if err != nil {
 		rplog.Error("Error connecting: %s\n", err)

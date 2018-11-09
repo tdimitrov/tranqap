@@ -3,9 +3,8 @@ package capture
 import (
 	"sync"
 
-	"github.com/tdimitrov/rpcap/rplog"
-
 	"github.com/tdimitrov/rpcap/output"
+	"github.com/tdimitrov/rpcap/rplog"
 )
 
 // Storage is a thread safe container for Capturers.

@@ -1,4 +1,4 @@
-package shell
+package capture
 
 import (
 	"fmt"
@@ -12,18 +12,18 @@ import (
 // pidPrefix is the string, which is put in front of the PID, when it is transmitted over stderr
 const pidPrefix = "MY_PID_IS:"
 
-// CmdGetPid returns a Bash one-liner, which does the following:
+// cmdGetPid returns a Bash one-liner, which does the following:
 // 1. Saves the PID of the last command executed in a Bash variable. This is supposed to be the capture command
 // 2. Echoes the PID to stderr, so that it can be saved by the Capturer. Stderr is used, because PCAP data is
 //		transmitted over stdout
 // 3. Waits the PID to finish, so that the session remains active until stop command is sent from rpcap shell
-func CmdGetPid() string {
+func cmdGetPid() string {
 	return "RPCAP_MY_PID=$! ; echo " + pidPrefix + " $RPCAP_MY_PID >&2 ; wait $RPCAP_MY_PID"
 }
 
-// StdErrHandler parses PID of the Capturer from stderr and saves all stderr messages in a string slice
+// stdErrHandler parses PID of the Capturer from stderr and saves all stderr messages in a string slice
 // If needed these messages are dumped to the user
-type StdErrHandler struct {
+type stdErrHandler struct {
 	pid        *int // Pointer, because Write() has got value receiver. Requirement of ssh lib
 	pidLock    *sync.Mutex
 	errLog     *[]string
@@ -34,12 +34,12 @@ type StdErrHandler struct {
 // It reads a PID from the buffer, passed to Write(). pidOutput is used to parse
 // the PID of the capturer so that it can be stopped on user request.
 // It's input parameter is a channel, used to return the PID as an integer
-func NewStdErrHandler() *StdErrHandler {
+func NewStdErrHandler() *stdErrHandler {
 	pid := -1
-	return &StdErrHandler{&pid, &sync.Mutex{}, new([]string), &sync.Mutex{}}
+	return &stdErrHandler{&pid, &sync.Mutex{}, new([]string), &sync.Mutex{}}
 }
 
-func (pw StdErrHandler) Write(p []byte) (n int, err error) {
+func (pw stdErrHandler) Write(p []byte) (n int, err error) {
 	data := string(p)
 
 	if strings.HasPrefix(data, pidPrefix) {
@@ -63,20 +63,20 @@ func (pw StdErrHandler) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
-func (pw *StdErrHandler) GetPid() int {
+func (pw *stdErrHandler) GetPid() int {
 	pw.pidLock.Lock()
 	pid := *pw.pid
 	pw.pidLock.Unlock()
 	return pid
 }
 
-func (pw *StdErrHandler) ClearPid() {
+func (pw *stdErrHandler) ClearPid() {
 	pw.pidLock.Lock()
 	*pw.pid = -1
 	pw.pidLock.Unlock()
 }
 
-func (pw *StdErrHandler) DumpStdErr() {
+func (pw *stdErrHandler) DumpStdErr() {
 	pw.errLogLock.Lock()
 	for _, errmsg := range *pw.errLog {
 		fmt.Println(errmsg)

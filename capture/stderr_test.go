@@ -1,4 +1,4 @@
-package shell
+package capture
 
 import (
 	"fmt"

@@ -5,7 +5,6 @@ import (
 
 	"github.com/tdimitrov/rpcap/output"
 	"github.com/tdimitrov/rpcap/rplog"
-	"github.com/tdimitrov/rpcap/shell"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -17,7 +16,7 @@ type Tcpdump struct {
 	captureCmd string
 	client     *ssh.Client
 	session    *ssh.Session
-	pid        *shell.StdErrHandler
+	pid        *stdErrHandler
 	out        *output.MultiOutput
 	onDie      CapturerEventChan
 }
@@ -32,10 +31,10 @@ func NewTcpdump(name string, dest string, config *ssh.ClientConfig, outer *outpu
 		fmt.Sprintf("<%s>", name),
 		dest,
 		*config,
-		captureCmd + runInBackground + shell.CmdGetPid(),
+		captureCmd + runInBackground + cmdGetPid(),
 		nil,
 		nil,
-		shell.NewStdErrHandler(),
+		NewStdErrHandler(),
 		outer,
 		subsc,
 	}
@@ -49,7 +48,7 @@ func (capt *Tcpdump) Start() bool {
 	}
 
 	var err error
-	capt.client, err = connect(capt.dest, &capt.config)
+	capt.client, err = ssh.Dial("tcp", capt.dest, &capt.config)
 	if err != nil {
 		rplog.Error("Error connecting to target %s: %s", capt.Name(), err)
 		return false
