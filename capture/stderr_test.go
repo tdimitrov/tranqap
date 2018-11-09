@@ -6,7 +6,7 @@ import (
 )
 
 func TestPidSuccess(t *testing.T) {
-	inst := NewStdErrHandler()
+	inst := newStdErrHandler()
 
 	expectedPid := 348
 
@@ -21,7 +21,7 @@ func TestPidSuccess(t *testing.T) {
 }
 
 func TestPidMalformedValue(t *testing.T) {
-	inst := NewStdErrHandler()
+	inst := newStdErrHandler()
 
 	buf := []byte(fmt.Sprintf("%sgibberish\n", pidPrefix))
 	inst.Write(buf)
@@ -34,7 +34,7 @@ func TestPidMalformedValue(t *testing.T) {
 }
 
 func TestPidSMalformedPrefix(t *testing.T) {
-	inst := NewStdErrHandler()
+	inst := newStdErrHandler()
 	expectedPid := 348
 
 	buf := []byte(fmt.Sprintf("Gibberish:%d\n", expectedPid))

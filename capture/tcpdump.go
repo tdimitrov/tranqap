@@ -34,7 +34,7 @@ func NewTcpdump(name string, dest string, config *ssh.ClientConfig, outer *outpu
 		captureCmd + runInBackground + cmdGetPid(),
 		nil,
 		nil,
-		NewStdErrHandler(),
+		newStdErrHandler(),
 		outer,
 		subsc,
 	}
