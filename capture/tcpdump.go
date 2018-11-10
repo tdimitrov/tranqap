@@ -2,54 +2,53 @@ package capture
 
 import (
 	"fmt"
+	"io"
 
 	"github.com/tdimitrov/rpcap/output"
 	"github.com/tdimitrov/rpcap/rplog"
-	"golang.org/x/crypto/ssh"
 )
+
+type captureTransport interface {
+	IsActive() bool
+	Connect() error
+	Run(cmd string, stdout io.Writer, stderr io.Writer) error
+}
 
 // Tcpdump is Capturer implementation for tcpdump
 type Tcpdump struct {
 	name       string
-	dest       string
-	config     ssh.ClientConfig
 	captureCmd string
-	client     *ssh.Client
-	session    *ssh.Session
 	pid        *stdErrHandler
 	out        *output.MultiOutput
 	onDie      CapturerEventChan
+	trans      captureTransport
 }
 
 // NewTcpdump creates Tcpdump Capturer
-func NewTcpdump(name string, dest string, config *ssh.ClientConfig, outer *output.MultiOutput, subsc CapturerEventChan) Capturer {
+func NewTcpdump(name string, outer *output.MultiOutput, subsc CapturerEventChan, trans captureTransport) Capturer {
 	const captureCmd = "tcpdump -U -s0 -w - 'ip and not port 22'"
 	const runInBackground = " & "
 	//const stderrToDevNull = " 2> /dev/null "
 
 	return &Tcpdump{
 		fmt.Sprintf("<%s>", name),
-		dest,
-		*config,
 		captureCmd + runInBackground + cmdGetPid(),
-		nil,
-		nil,
 		newStdErrHandler(),
 		outer,
 		subsc,
+		trans,
 	}
 }
 
 // Start method connects the ssh client to the destination and start capturing
 func (capt *Tcpdump) Start() bool {
-	if capt.session != nil || capt.client != nil {
+	if capt.trans.IsActive() {
 		rplog.Error("There is an active session for capturer %s", capt.Name())
 		return false
 	}
 
-	var err error
-	capt.client, err = ssh.Dial("tcp", capt.dest, &capt.config)
-	if err != nil {
+	if err := capt.trans.Connect(); err != nil {
+		capt.out.Close()
 		rplog.Error("Error connecting to target %s: %s", capt.Name(), err)
 		return false
 	}
@@ -61,25 +60,15 @@ func (capt *Tcpdump) Start() bool {
 
 // Stop terminates the capture
 func (capt *Tcpdump) Stop() bool {
-	sess, err := capt.client.NewSession()
-	if err != nil {
-		rplog.Error("capture.Tcpdump: Error creating session for Stop() for capturer %s", capt.Name())
-		return false
-	}
-
-	defer sess.Close()
-
 	pid := capt.pid.GetPid()
 	// Clear PID to indicate an expected kill
 	capt.pid.ClearPid()
 
-	err = sess.Start(fmt.Sprintf("kill %d", pid))
+	err := capt.trans.Run(fmt.Sprintf("kill %d", pid), nil, nil)
 	if err != nil {
-		rplog.Error("capture.Tcpdump: Error starting kill command for capturer %s", capt.Name())
+		rplog.Error("capture.Tcpdump: Error starting kill command for capturer %s: %s", capt.Name(), err)
 		return false
 	}
-
-	sess.Wait()
 
 	capt.out.Close()
 
@@ -95,25 +84,14 @@ func (capt *Tcpdump) AddOutputer(newOutputerFn output.OutputerFactory) error {
 func (capt *Tcpdump) startSession() bool {
 	//fmt.Println(client.LocalAddr().(*net.TCPAddr).IP)
 	var err error
-	capt.session, err = capt.client.NewSession()
-	if err != nil {
-		rplog.Error("Error creating initial session for capturer %s", capt.Name())
-		return false
-	}
 
-	defer capt.session.Close()
 	defer capt.out.Close()
 
-	capt.session.Stdout = capt.out
-	capt.session.Stderr = *capt.pid
-
-	err = capt.session.Start(capt.captureCmd)
+	err = capt.trans.Run(capt.captureCmd, capt.out, capt.pid)
 	if err != nil {
-		rplog.Error("Error running tcpdum command for capturer %s", capt.Name())
+		rplog.Error("Error running tcpdump command for capturer %s: ", capt.Name(), err)
 		return false
 	}
-
-	capt.session.Wait()
 
 	if capt.pid.GetPid() != -1 {
 		// PID is not cleared - this is unexpected stop

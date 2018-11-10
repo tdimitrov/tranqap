@@ -53,7 +53,8 @@ func cmdStart(ctx *ishell.Context) {
 		}
 
 		// Create capturer
-		capt := capture.NewTcpdump(*t.Name, *d, c, m, capturers.GetChan())
+		sshClient := NewSSHClient(*d, *c)
+		capt := capture.NewTcpdump(*t.Name, m, capturers.GetChan(), sshClient)
 		if capt == nil {
 			ctx.Printf("Error creating Capturer for target <%s>\n", *t.Name)
 			return
