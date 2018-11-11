@@ -90,6 +90,7 @@ func (capt *Tcpdump) startSession() bool {
 	err = capt.trans.Run(capt.captureCmd, capt.out, capt.pid)
 	if err != nil {
 		rplog.Error("Error running tcpdump command for capturer %s: ", capt.Name(), err)
+		capt.onDie <- CapturerEvent{capt, CapturerDead}
 		return false
 	}
 
