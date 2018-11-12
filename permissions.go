@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"strings"
-
-	"golang.org/x/crypto/ssh"
 )
 
 type stdOutWriter struct {
@@ -66,29 +64,16 @@ func cmdPermissions() string {
 }
 
 // checkPermissions executes a bash function, which checks if tcpdump can be run on a target machine
-func checkPermissions(c *ssh.ClientConfig, dest string) (string, error) {
-	client, err := ssh.Dial("tcp", dest, c)
-	if err != nil {
+func checkPermissions(trans *SSHClient) (string, error) {
+	if err := trans.Connect(); err != nil {
 		return "", fmt.Errorf("Error connecting: %s", err)
 	}
 
-	sess, err := client.NewSession()
-	if err != nil {
-		return "", fmt.Errorf("Error creating SSH session: %s", err)
-	}
-
-	defer sess.Close()
-
 	out := stdOutWriter{&strings.Builder{}}
-	sess.Stdout = out
-	sess.Stderr = out
 
-	err = sess.Start(cmdPermissions())
-	if err != nil {
+	if err := trans.Run(cmdPermissions(), out, out); err != nil {
 		return "", fmt.Errorf("Error running permissions command: %s", err)
 	}
-
-	sess.Wait()
 
 	return out.output.String(), nil
 }

@@ -112,7 +112,8 @@ func cmdTargets(ctx *ishell.Context) {
 		}
 
 		ctx.Printf("=== Running checks for target <%s> ===\n", *t.Name)
-		if output, err := checkPermissions(c, *d); err != nil {
+		sshClient := NewSSHClient(*d, *c)
+		if output, err := checkPermissions(sshClient); err != nil {
 			ctx.Printf("%s\n", err)
 			return
 		} else {
