@@ -35,3 +35,16 @@ What rpcap does:
 4. The resulting PCAP file is saved locally on disk and optionally it can be watched in real time with GUI packet analyser (e.g. wireshark).
 5. Handles starting and stopping of the capturer process and also the SSH connections.
 6. Checks if the user, set in the config file, has sufficient permissions to run the capturer.
+
+# Quick start guide
+For the moment no prebuilt binaries are provided so the only installation option is from source.
+
+## Installation from source
+rpcap is written in Go, so the Go distribution should be installed. Instructions for the installation can be found [here](https://golang.org/doc/install). 
+
+After that:
+```bash
+go get  github.com/tdimitrov/rpcap
+go install  github.com/tdimitrov/rpcap
+```
+At this point rpcap should be installer in `$GOPATH/bin`. This path should be added to system path.
