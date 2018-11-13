@@ -50,7 +50,7 @@ go install  github.com/tdimitrov/rpcap
 At this point rpcap should be installer in `$GOPATH/bin`. This path should be added to system path.
 
 ## Configuration and usage
-rpcap looks for a file named config.json in the current working dir. A sample file can be found [here](https://github.com/tdimitrov/rpcap/blob/master/samples/config.json).
+rpcap looks for a file named config.json in the current working dir. A sample file can be found [here](samples/config.json).
 
 Most of the fields are self-explanatory, but anyway:
 * **targets** is an array of target machines. For each target:
