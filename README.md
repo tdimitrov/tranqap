@@ -59,3 +59,25 @@ Most of the fields are self-explanatory, but anyway:
   * **Destination** is a directory name, where PCAP files for the target will be saved.
   * **File pattern** is a filename pattern for each PCAP file. A rotation counter and file extension will be appended to the pattern. E.g. PATTERN.1.pcap
   * **File rotation count** determines how many files to keep on rotation.
+
+The binary should be executed in the directory, where `config.json` is located. The application uses a very basic shell as a UI. The following commands are supported:
+* **targets** - Lists all targets and prints details about binary's permissions/capabilities. This is an indication if tcpdump can be run without root.
+```
+rpcap> targets
+=== Running checks for target <Local target 1> ===
+Check if tcpdump is installed: Yes
+Check if tcpdump has got cap_net_admin capabilities: NO
+Check if tcpdump has got cap_net_raw+eip capabilities: NO
+User is member of the binary's group: Yes
+
+=== Running checks for target <Local target 2> ===
+Check if tcpdump is installed: Yes
+Check if tcpdump has got cap_net_admin capabilities: NO
+Check if tcpdump has got cap_net_raw+eip capabilities: NO
+User is member of the binary's group: Yes
+
+rpcap>  
+```
+* **start** - Executes the capturer on all remote targets. A PCAP file is saved to the destination directory and the old files are rotated.
+* **stop** - Stops the capturer on all targets.
+* **wireshark** - Starts a wireshark instance for each target. All traffic, which is saved on disk is also piped to wireshark, so it can be viewed in real  time.
