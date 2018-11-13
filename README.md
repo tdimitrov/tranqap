@@ -48,3 +48,14 @@ go get  github.com/tdimitrov/rpcap
 go install  github.com/tdimitrov/rpcap
 ```
 At this point rpcap should be installer in `$GOPATH/bin`. This path should be added to system path.
+
+## Configuration and usage
+rpcap looks for a file named config.json in the current working dir. A sample file can be found [here](https://github.com/tdimitrov/rpcap/blob/master/samples/config.json).
+
+Most of the fields are self-explanatory, but anyway:
+* **targets** is an array of target machines. For each target:
+  * **Name** is a string, which distinguishes the target. No need to be unique, it is used in the error messages and log files to identify the target.
+  * **Host**, **Port**, **User**, **Key** - used for the SSH connection. At the moment only Public key authentication is supported. For now Password authentication won't be supported for security reasons.
+  * **Destination** is a directory name, where PCAP files for the target will be saved.
+  * **File pattern** is a filename pattern for each PCAP file. A rotation counter and file extension will be appended to the pattern. E.g. PATTERN.1.pcap
+  * **File rotation count** determines how many files to keep on rotation.
