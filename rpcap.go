@@ -12,7 +12,8 @@ func main() {
 	shell := ishell.New()
 	shell.SetPrompt("rpcap> ")
 
-	if err := rplog.Init("rpcap.log"); err != nil {
+	printCb := func(f string, a ...interface{}) { shell.Printf(f, a...) }
+	if err := rplog.Init("rpcap.log", printCb); err != nil {
 		fmt.Printf("Error initialising logger: %s\nLog file won't be generated", err)
 	}
 
