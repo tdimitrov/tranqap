@@ -9,23 +9,22 @@ import (
 )
 
 func main() {
+	// Create shell
 	shell := ishell.New()
 	shell.SetPrompt("rpcap> ")
 
+	// Create logger
 	printCb := func(f string, a ...interface{}) { shell.Printf(f, a...) }
 	if err := rplog.Init("rpcap.log", printCb); err != nil {
 		fmt.Printf("Error initialising logger: %s\nLog file won't be generated", err)
 	}
 
+	// Initialise capturers storage
+	initStorage()
+
 	rplog.Info("Program started.")
 
-	shell.EOF(func(c *ishell.Context) {
-		capturers.StopAll()
-		c.Stop()
-	})
-
 	shell.Interrupt(func(c *ishell.Context, count int, input string) {
-		capturers.StopAll()
 		c.Stop()
 	})
 
@@ -35,4 +34,6 @@ func main() {
 	shell.AddCmd(&ishell.Cmd{Name: "targets", Help: "show information about loaded targets", Func: cmdTargets})
 
 	shell.Run()
+	capturers.Close()
+	rplog.Close()
 }

@@ -15,14 +15,17 @@ const (
 
 var capturers *capture.Storage
 
+func initStorage() {
+	capturers = capture.NewStorage()
+}
+
 func cmdStart(ctx *ishell.Context) {
+	rplog.Info("Called start command")
 	// Check if there is a running job
-	if capturers != nil {
+	if capturers.Empty() == false {
 		ctx.Println("There is alreaedy a running capture")
 		return
 	}
-
-	capturers = capture.NewStorage()
 
 	// Get configuration
 	config, err := getConfig("config.json")
@@ -73,14 +76,12 @@ func cmdStop(ctx *ishell.Context) {
 	rplog.Info("Called stop command")
 
 	// Check if there is a running job
-	if capturers == nil {
+	if capturers.Empty() == true {
 		ctx.Println("There are no running captures.")
 		return
 	}
 
 	capturers.StopAll()
-
-	capturers = nil
 }
 
 func cmdWireshark(ctx *ishell.Context) {

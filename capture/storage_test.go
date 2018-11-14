@@ -20,9 +20,9 @@ func (capt *capturerMock) Start() bool {
 	return true
 }
 
-func (capt *capturerMock) Stop() bool {
+func (capt *capturerMock) Stop() error {
 	capt.isStarted = false
-	return true
+	return nil
 }
 
 func (capt *capturerMock) AddOutputer(newOutputer output.OutputerFactory) error {
@@ -78,7 +78,9 @@ func TestStorageStopAll(t *testing.T) {
 		t.Errorf("Saved capturer is not stopped\n")
 	}
 
-	if len(storage.capturers) != 0 {
-		t.Errorf("Error occured during StopAll(). There are still capturers in the storage\n")
+	storage.Close()
+
+	if cnt := len(storage.capturers); cnt != 0 {
+		t.Errorf("Error occured during StopAll(). There are still %d capturers in the storage\n", cnt)
 	}
 }

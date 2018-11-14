@@ -9,15 +9,23 @@ import (
 
 // Storage is a thread safe container for Capturers.
 type Storage struct {
-	capturers   []Capturer
-	mut         sync.Mutex
-	events      CapturerEventChan
-	handlerDone chan struct{}
+	capturers       []Capturer
+	mut             sync.Mutex
+	events          CapturerEventChan
+	wg              sync.WaitGroup
+	handlerFinished chan struct{}
 }
 
 // NewStorage creates a Storage instance
 func NewStorage() *Storage {
-	ret := &Storage{[]Capturer{}, sync.Mutex{}, make(CapturerEventChan, 1), make(chan struct{}, 1)}
+	ret := &Storage{
+		[]Capturer{},
+		sync.Mutex{},
+		make(CapturerEventChan, 1),
+		sync.WaitGroup{},
+		make(chan struct{}, 1),
+	}
+
 	go ret.eventHandler()
 
 	return ret
@@ -34,6 +42,7 @@ func (c *Storage) Add(newCapt Capturer) {
 	defer c.mut.Unlock()
 
 	c.capturers = append(c.capturers, newCapt)
+	c.wg.Add(1)
 }
 
 // StopAll calls Stop() on each Capturer in the container
@@ -48,12 +57,23 @@ func (c *Storage) StopAll() {
 
 	c.mut.Lock()
 	for _, c := range c.capturers {
-		c.Stop()
+		if err := c.Stop(); err != nil {
+			rplog.Feedback("Can't stop %s. %s", c.Name(), err)
+		}
 	}
 	c.mut.Unlock()
 
-	rplog.Info("capture.Storage: Waiting for confirmation")
-	<-c.handlerDone
+}
+
+// Close terminates the event handler routine
+func (c *Storage) Close() {
+	rplog.Info("Terminating storage")
+	c.StopAll()
+
+	c.wg.Wait()
+	close(c.events)
+
+	<-c.handlerFinished
 
 	rplog.Info("capture.Storage: All capturers are now stopped")
 }
@@ -71,6 +91,14 @@ func (c *Storage) AddNewOutput(factFn output.OutputerFactory) {
 	}
 }
 
+// Empty returns true if there are no Captureres in the storage
+func (c *Storage) Empty() bool {
+	c.mut.Lock()
+	defer c.mut.Unlock()
+
+	return len(c.capturers) == 0
+}
+
 func (c *Storage) eventHandler() {
 	rplog.Info("capture.Storage: Starting eventHandler main loop")
 	for e := range c.events {
@@ -80,17 +108,13 @@ func (c *Storage) eventHandler() {
 			if capt == e.from {
 				rplog.Info("capture.Storage: Removed capturer %s", e.from.Name())
 				c.capturers = append(c.capturers[:i], c.capturers[i+1:]...)
+				c.wg.Done()
 				break
 			}
 		}
-		capturersCount := len(c.capturers)
 		c.mut.Unlock()
-
-		if capturersCount == 0 {
-			break
-		}
 	}
 
 	rplog.Info("capture.Storage: All capturers are stopped. Exited from eventHandler main loop")
-	c.handlerDone <- struct{}{}
+	c.handlerFinished <- struct{}{}
 }
