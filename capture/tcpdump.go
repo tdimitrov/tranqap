@@ -97,8 +97,9 @@ func (capt *Tcpdump) startSession() bool {
 	if capt.pid.GetPid() != -1 {
 		// PID is not cleared - this is unexpected stop
 		capt.onDie <- CapturerEvent{capt, CapturerDead}
-		rplog.Error("capture.Tcpdump: Capturer %s died unexpectedly. Dumping stderr:", capt.Name())
-		capt.pid.DumpStdErr()
+		rplog.Error("capture.Tcpdump: Capturer %s died unexpectedly. Dumping stderr:\n%s",
+			capt.Name(), capt.pid.DumpStdErr())
+		rplog.Feedback("Capturer %s died. stderr:\n%s", capt.Name(), capt.pid.DumpStdErr())
 	} else {
 		rplog.Info("capture.Tcpdump: Capturer %s killed by command", capt.Name())
 		capt.onDie <- CapturerEvent{capt, CapturerStopped}

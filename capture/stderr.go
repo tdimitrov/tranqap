@@ -1,7 +1,6 @@
 package capture
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 	"sync"
@@ -76,10 +75,13 @@ func (pw *stdErrHandler) ClearPid() {
 	pw.pidLock.Unlock()
 }
 
-func (pw *stdErrHandler) DumpStdErr() {
+func (pw *stdErrHandler) DumpStdErr() string {
 	pw.errLogLock.Lock()
+	var out strings.Builder
 	for _, errmsg := range *pw.errLog {
-		fmt.Println(errmsg)
+		out.WriteString(errmsg)
 	}
 	pw.errLogLock.Unlock()
+
+	return out.String()
 }
