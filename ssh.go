@@ -47,12 +47,10 @@ func (c *SSHClient) Run(cmd string, stdout io.Writer, stderr io.Writer) error {
 	session.Stdout = stdout
 	session.Stderr = stderr
 
-	err = session.Start(cmd)
+	err = session.Run(cmd)
 	if err != nil {
-		return fmt.Errorf("Error running command: %s", err)
+		return fmt.Errorf("Error running '%s': %s", cmd, err)
 	}
-
-	session.Wait()
 
 	return nil
 }
