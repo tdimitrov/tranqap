@@ -8,7 +8,8 @@
             "Key": "docker-target/ssh-key",
             "Destination": "PCAPs/local_target_1",
             "File Pattern": "trace",
-            "File Rotation Count": 10
+            "File Rotation Count": 10,
+            "Use sudo": false
         },
         {
             "Name": "Local target 2",
@@ -18,7 +19,8 @@
             "Key": "docker-target/ssh-key",
             "Destination": "PCAPs/local_target_2",
             "File Pattern": "trace",
-            "File Rotation Count": 10
+            "File Rotation Count": 10,
+            "Use sudo": true
         }
     ]
 
