@@ -59,6 +59,7 @@ Most of the fields are self-explanatory, but anyway:
   * **Destination** is a directory name, where PCAP files for the target will be saved.
   * **File pattern** is a filename pattern for each PCAP file. A rotation counter and file extension will be appended to the pattern. E.g. PATTERN.1.pcap
   * **File rotation count** determines how many files to keep on rotation.
+  * **Use sudo** is a bool variable specifying if tcpdump should be run with sudo or not.
 
 The binary should be executed in the directory, where `config.json` is located. The application uses a very basic shell as a UI. The following commands are supported:
 * **targets** - Lists all targets and prints details about binary's permissions/capabilities. This is an indication if tcpdump can be run without root.
