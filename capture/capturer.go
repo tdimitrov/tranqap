@@ -27,7 +27,7 @@ type CapturerEventChan chan CapturerEvent
 // for tcpdump. In the future more can be added, e.g. tshark, dumpcap, etc.
 type Capturer interface {
 	Start() bool
-	Stop() bool
+	Stop() error
 	AddOutputer(newOutputer output.OutputerFactory) error
 	Name() string
 }

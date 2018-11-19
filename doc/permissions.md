@@ -8,3 +8,6 @@ chgrp pcap /usr/sbin/tcpdump
 chmod 750 /usr/sbin/tcpdump
 
 setcap cap_net_raw,cap_net_admin=eip /usr/sbin/tcpdump
+
+In sudoers (use visudo!!!!):
+rpcap ALL = NOPASSWD: /usr/sbin/tcpdump

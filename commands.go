@@ -57,7 +57,18 @@ func cmdStart(ctx *ishell.Context) {
 
 		// Create capturer
 		sshClient := NewSSHClient(*d, *c)
-		capt := capture.NewTcpdump(*t.Name, m, capturers.GetChan(), sshClient)
+
+		var sudoConfig capture.SudoConfig
+		if *t.UseSudo == true {
+			sudoConfig.Use = true
+			sudoConfig.Username = new(string)
+			*sudoConfig.Username = *t.User
+		} else {
+			sudoConfig.Use = false
+			sudoConfig.Username = nil
+		}
+
+		capt := capture.NewTcpdump(*t.Name, m, capturers.GetChan(), sshClient, sudoConfig)
 		if capt == nil {
 			ctx.Printf("Error creating Capturer for target <%s>\n", *t.Name)
 			return
@@ -116,7 +127,6 @@ func cmdTargets(ctx *ishell.Context) {
 		sshClient := NewSSHClient(*d, *c)
 		if output, err := checkPermissions(sshClient); err != nil {
 			ctx.Printf("%s\n", err)
-			return
 		} else {
 			ctx.Printf("%s\n", output)
 		}

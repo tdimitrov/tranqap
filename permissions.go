@@ -27,6 +27,24 @@ func cmdPermissions() string {
 			echo "Yes"
 		fi
 
+		printf "Check if sudo is installed: "
+		BIN=$(command -v sudo)
+		if [ $? -ne 0 ]
+		then
+			echo "NO"
+		else
+			echo "Yes"
+		fi
+
+		printf "Check if tcpdump can be run with sudo, without password: "
+		sudo -n tcpdump --version > /dev/null 2>&1
+		if [ $? -ne 0 ]
+		then
+			echo "NO"
+		else
+			echo "Yes"
+		fi
+
 		printf "Check if tcpdump has got cap_net_admin capabilities: "
 		getcap $BIN | grep cap_net_admin > /dev/null
 		if [ $? -ne 0 ]

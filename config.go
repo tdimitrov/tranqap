@@ -24,6 +24,7 @@ type target struct {
 	Destination *string
 	FilePattern *string `json:"File Pattern"`
 	RotationCnt *int    `json:"File Rotation Count"`
+	UseSudo     *bool   `json:"Use sudo"`
 }
 
 func getConfig(fname string) (config, error) {
@@ -88,6 +89,11 @@ func getClientConfig(t *target) (*ssh.ClientConfig, *string, error) {
 
 	if *t.RotationCnt < 0 {
 		return nil, nil, fmt.Errorf("Invalid rotation count for target <%s> (%d)", *t.Name, *t.RotationCnt)
+	}
+
+	if t.UseSudo == nil {
+		t.UseSudo = new(bool)
+		*t.UseSudo = false
 	}
 
 	dest := fmt.Sprintf("%s:%d", *t.Host, *t.Port)
