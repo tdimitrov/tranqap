@@ -20,7 +20,7 @@
             "Destination": "PCAPs/local_target_2",
             "File Pattern": "trace",
             "File Rotation Count": 10,
-            "Use sudo": true
+            "Use sudo": false
         }
     ]
 
