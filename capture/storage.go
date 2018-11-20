@@ -100,6 +100,8 @@ func (c *Storage) Empty() bool {
 }
 
 func (c *Storage) eventHandler() {
+	defer func() { c.handlerFinished <- struct{}{} }()
+
 	rplog.Info("capture.Storage: Starting eventHandler main loop")
 	for e := range c.events {
 		rplog.Info("capture.Storage: eventHandler got an event from a capturer %s", e.from.Name())
@@ -116,5 +118,4 @@ func (c *Storage) eventHandler() {
 	}
 
 	rplog.Info("capture.Storage: All capturers are stopped. Exited from eventHandler main loop")
-	c.handlerFinished <- struct{}{}
 }
