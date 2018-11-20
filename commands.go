@@ -19,7 +19,7 @@ func initStorage() {
 	capturers = capture.NewStorage()
 }
 
-func cmdStart(ctx *ishell.Context) {
+func cmdStart(ctx *ishell.Context, configFile string) {
 	rplog.Info("Called start command")
 	// Check if there is a running job
 	if capturers.Empty() == false {
@@ -28,7 +28,7 @@ func cmdStart(ctx *ishell.Context) {
 	}
 
 	// Get configuration
-	config, err := getConfig("config.json")
+	config, err := getConfig(configFile)
 	if err != nil {
 		ctx.Printf("Error loading configuration.\n", err)
 		return
