@@ -55,17 +55,29 @@ type OutputerFactory func(MOEventChan) Outputer
 // It also saves the pcapHeader, received at the start of the capturing, so that
 // the header can be reinjected when an outputer is restarted.
 type MultiOutput struct {
-	members    []Outputer
-	membersMut sync.Mutex
-	pcapHeader []byte
-	events     MOEventChan
+	members         []Outputer
+	membersMut      sync.Mutex
+	pcapHeader      []byte
+	events          MOEventChan
+	wg              sync.WaitGroup
+	handlerFinished chan struct{}
 }
 
 // NewMultiOutput create new MultiOutput instance. The function receives one or more
 // Outputers as input parameters, which are added to the members slice.
 func NewMultiOutput(outputers ...Outputer) *MultiOutput {
-	ret := &MultiOutput{outputers, sync.Mutex{}, nil, make(MOEventChan, 1)}
+	ret := &MultiOutput{
+		outputers,
+		sync.Mutex{},
+		nil,
+		make(MOEventChan, 1),
+		sync.WaitGroup{},
+		make(chan struct{}, 1),
+	}
+
+	ret.wg.Add(len(outputers))
 	go ret.eventHandler()
+
 	return ret
 }
 
@@ -94,6 +106,9 @@ func (mo *MultiOutput) Close() {
 	for _, o := range mo.members {
 		o.Close()
 	}
+	mo.wg.Wait()
+	close(mo.events)
+	<-mo.handlerFinished
 }
 
 // AddMember adds new Outputer to the members slice
@@ -107,6 +122,8 @@ func (mo *MultiOutput) AddMember(newOutFn OutputerFactory) error {
 		return errors.New("Error creating Outputer with factory function")
 	}
 
+	mo.wg.Add(1)
+
 	// Send the PCAP header
 	newMember.Write(mo.pcapHeader)
 
@@ -119,17 +136,19 @@ func (mo *MultiOutput) AddMember(newOutFn OutputerFactory) error {
 // Effectively at the moment this function just removes dead Outputers from
 // the members slice
 func (mo *MultiOutput) eventHandler() {
+	defer func() { mo.handlerFinished <- struct{}{} }()
+
 	for event := range mo.events {
 		mo.membersMut.Lock()
 
 		for i, c := range mo.members {
 			if c == event.from {
 				mo.members = append(mo.members[:i], mo.members[i+1:]...)
+				mo.wg.Done()
 				break
 			}
 		}
 
 		mo.membersMut.Unlock()
 	}
-
 }

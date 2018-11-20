@@ -104,8 +104,6 @@ func (capt *Tcpdump) Stop() error {
 		return err
 	}
 
-	capt.out.Close()
-
 	rplog.Info("capture.Tcpdump: '%s' executed successfully for capturer %s", cmd, capt.Name())
 	return nil
 }
