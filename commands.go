@@ -19,6 +19,20 @@ func initStorage() {
 	capturers = capture.NewStorage()
 }
 
+func getSudoConfig(t target) capture.SudoConfig {
+	var ret capture.SudoConfig
+	if *t.UseSudo == true {
+		ret.Use = true
+		ret.Username = new(string)
+		*ret.Username = *t.User
+	} else {
+		ret.Use = false
+		ret.Username = nil
+	}
+
+	return ret
+}
+
 func cmdStart(ctx *ishell.Context, configFile string) {
 	rplog.Info("Called start command")
 	// Check if there is a running job
@@ -55,20 +69,11 @@ func cmdStart(ctx *ishell.Context, configFile string) {
 			return
 		}
 
-		// Create capturer
+		// Create SSH client
 		sshClient := NewSSHClient(*d, *c)
 
-		var sudoConfig capture.SudoConfig
-		if *t.UseSudo == true {
-			sudoConfig.Use = true
-			sudoConfig.Username = new(string)
-			*sudoConfig.Username = *t.User
-		} else {
-			sudoConfig.Use = false
-			sudoConfig.Username = nil
-		}
-
-		capt := capture.NewTcpdump(*t.Name, m, capturers.GetChan(), sshClient, sudoConfig)
+		// Create capturer
+		capt := capture.NewTcpdump(*t.Name, m, capturers.GetChan(), sshClient, getSudoConfig(t))
 		if capt == nil {
 			ctx.Printf("Error creating Capturer for target <%s>\n", *t.Name)
 			return
