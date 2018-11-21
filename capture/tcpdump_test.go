@@ -62,7 +62,7 @@ func createTestInstances() (CapturerEventChan, *transportMock, Capturer, *output
 func TestTcpdumpStop(t *testing.T) {
 	events, trans, inst, out := createTestInstances()
 
-	if inst.Start() == false {
+	if inst.Start() != nil {
 		t.Errorf("Unexpected Start() failure\n")
 	}
 
@@ -88,7 +88,7 @@ func TestTcpdumpStop(t *testing.T) {
 func TestTcpdumpDie(t *testing.T) {
 	events, trans, inst, out := createTestInstances()
 
-	if inst.Start() == false {
+	if inst.Start() != nil {
 		t.Errorf("Unexpected Start() failure\n")
 	}
 
@@ -116,7 +116,7 @@ func TestTcpdumpFailOnRun(t *testing.T) {
 
 	trans.failOnRun = true
 
-	if inst.Start() == false {
+	if inst.Start() != nil {
 		t.Errorf("Unexpected Start() failure\n")
 	}
 
@@ -140,8 +140,8 @@ func TestTcpdumpFailOnConnect(t *testing.T) {
 
 	trans.failOnConnect = true
 
-	if inst.Start() != false {
-		t.Errorf("Start() should return failse\n")
+	if inst.Start() == nil {
+		t.Errorf("Start() should return error\n")
 	}
 
 	if out.isClosed == false {

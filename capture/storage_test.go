@@ -15,9 +15,9 @@ func newCapturerMock() *capturerMock {
 	return &capturerMock{true, "Fake Capturer"}
 }
 
-func (capt *capturerMock) Start() bool {
+func (capt *capturerMock) Start() error {
 	capt.isStarted = true
-	return true
+	return nil
 }
 
 func (capt *capturerMock) Stop() error {

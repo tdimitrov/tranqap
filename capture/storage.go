@@ -75,7 +75,7 @@ func (c *Storage) Close() {
 
 	<-c.handlerFinished
 
-	rplog.Info("capture.Storage: All capturers are now stopped")
+	rplog.Info("Storage terminated")
 }
 
 // AddNewOutput adds new Outputer to each capturer
@@ -104,11 +104,11 @@ func (c *Storage) eventHandler() {
 
 	rplog.Info("capture.Storage: Starting eventHandler main loop")
 	for e := range c.events {
-		rplog.Info("capture.Storage: eventHandler got an event from a capturer %s", e.from.Name())
+		rplog.Info("Storage: got an event from %s", e.from.Name())
 		c.mut.Lock()
 		for i, capt := range c.capturers {
 			if capt == e.from {
-				rplog.Info("capture.Storage: Removed capturer %s", e.from.Name())
+				rplog.Info("Storage: Removed %s", e.from.Name())
 				c.capturers = append(c.capturers[:i], c.capturers[i+1:]...)
 				c.wg.Done()
 				break

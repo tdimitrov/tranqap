@@ -66,21 +66,21 @@ func NewTcpdump(name string, outer *output.MultiOutput, subsc CapturerEventChan,
 }
 
 // Start method connects the ssh client to the destination and start capturing
-func (capt *Tcpdump) Start() bool {
+func (capt *Tcpdump) Start() error {
 	if capt.trans.IsActive() {
-		rplog.Error("There is an active session for capturer %s", capt.Name())
-		return false
+		return fmt.Errorf("There is an active session for capturer %s", capt.Name())
 	}
 
 	if err := capt.trans.Connect(); err != nil {
 		capt.out.Close()
-		rplog.Error("Error connecting to target %s: %s", capt.Name(), err)
-		return false
+		return fmt.Errorf("Error connecting to %s: %s", capt.Name(), err)
 	}
 
 	go capt.startSession()
 
-	return true
+	rplog.Info("Connected to %s and started a session.", capt.Name())
+
+	return nil
 }
 
 // Stop terminates the capture
@@ -94,17 +94,16 @@ func (capt *Tcpdump) Stop() error {
 		// the sudo process runs as root and it can't be killed with a regular user
 		// that's why the child process is killed
 		cmd = fmt.Sprintf("kill `ps --ppid %d -o pid=`", pid)
-
 	} else {
 		cmd = fmt.Sprintf("kill %d", pid)
 	}
 
 	err := capt.trans.Run(cmd, nil, nil)
 	if err != nil {
-		return err
+		return fmt.Errorf("Error running kill command: %s", err)
 	}
 
-	rplog.Info("capture.Tcpdump: '%s' executed successfully for capturer %s", cmd, capt.Name())
+	rplog.Info("Kill executed successfully for %s", capt.Name())
 	return nil
 }
 
@@ -113,7 +112,7 @@ func (capt *Tcpdump) AddOutputer(newOutputerFn output.OutputerFactory) error {
 	return capt.out.AddExtMember(newOutputerFn)
 }
 
-func (capt *Tcpdump) startSession() bool {
+func (capt *Tcpdump) startSession() {
 	//fmt.Println(client.LocalAddr().(*net.TCPAddr).IP)
 	var err error
 
@@ -121,23 +120,23 @@ func (capt *Tcpdump) startSession() bool {
 
 	err = capt.trans.Run(capt.captureCmd, capt.out, capt.pid)
 	if err != nil {
-		rplog.Error("Error running tcpdump command for capturer %s: ", capt.Name(), err)
+		rplog.Error("Session error for %s. Can't run tcpdump command: %s", capt.Name(), err)
 		capt.onDie <- CapturerEvent{capt, CapturerDead}
-		return false
+		return
 	}
 
 	if capt.pid.GetPid() != -1 {
 		// PID is not cleared - this is unexpected stop
 		capt.onDie <- CapturerEvent{capt, CapturerDead}
-		rplog.Error("capture.Tcpdump: Capturer %s died unexpectedly. Dumping stderr:\n%s",
+		rplog.Error("Session error for %s. Process died unexpectedly. Dumping stderr:\n%s",
 			capt.Name(), capt.pid.DumpStdErr())
 		rplog.Feedback("Capturer %s died. stderr:\n%s", capt.Name(), capt.pid.DumpStdErr())
 	} else {
-		rplog.Info("capture.Tcpdump: Capturer %s killed by command", capt.Name())
+		rplog.Info("Session info for %s: process killed by command", capt.Name())
 		capt.onDie <- CapturerEvent{capt, CapturerStopped}
 	}
 
-	return true
+	return
 }
 
 // Name returns the name of the capturer's target (used only for logging purposes)

@@ -34,17 +34,18 @@ func getSudoConfig(t target) capture.SudoConfig {
 }
 
 func cmdStart(ctx *ishell.Context, configFile string) {
-	rplog.Info("Called start command")
 	// Check if there is a running job
 	if capturers.Empty() == false {
 		ctx.Println("There is alreaedy a running capture")
 		return
 	}
 
+	rplog.Info("Called start command")
+
 	// Get configuration
 	config, err := getConfig(configFile)
 	if err != nil {
-		ctx.Printf("Error loading configuration.\n", err)
+		ctx.Printf("Error loading configuration. %s\n", err)
 		return
 	}
 
@@ -79,8 +80,8 @@ func cmdStart(ctx *ishell.Context, configFile string) {
 			return
 		}
 
-		if capt.Start() == false {
-			ctx.Printf("Error starting Capturer for target <%s>\n", *t.Name)
+		if err := capt.Start(); err != nil {
+			ctx.Println(err)
 			return
 		}
 
@@ -89,13 +90,13 @@ func cmdStart(ctx *ishell.Context, configFile string) {
 }
 
 func cmdStop(ctx *ishell.Context) {
-	rplog.Info("Called stop command")
-
 	// Check if there is a running job
 	if capturers.Empty() == true {
 		ctx.Println("There are no running captures.")
 		return
 	}
+
+	rplog.Info("Called stop command")
 
 	capturers.StopAll()
 }
