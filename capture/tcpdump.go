@@ -110,7 +110,7 @@ func (capt *Tcpdump) Stop() error {
 
 // AddOutputer calls AddMember of the MultiOutput instance of Tcpdump
 func (capt *Tcpdump) AddOutputer(newOutputerFn output.OutputerFactory) error {
-	return capt.out.AddMember(newOutputerFn)
+	return capt.out.AddExtMember(newOutputerFn)
 }
 
 func (capt *Tcpdump) startSession() bool {

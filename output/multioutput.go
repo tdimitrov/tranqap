@@ -75,7 +75,6 @@ func NewMultiOutput(outputers ...Outputer) *MultiOutput {
 		make(chan struct{}, 1),
 	}
 
-	ret.wg.Add(len(outputers))
 	go ret.eventHandler()
 
 	return ret
@@ -111,8 +110,15 @@ func (mo *MultiOutput) Close() {
 	<-mo.handlerFinished
 }
 
-// AddMember adds new Outputer to the members slice
-func (mo *MultiOutput) AddMember(newOutFn OutputerFactory) error {
+// AddExtMember adds new external Outputer to the members slice.
+// This is usually another process which is forked (e.g. wireshark)
+// and can exit any time, due to crash or being stopped by the user.
+//
+// newOutFn is a function which accepts MOEventChan and creates an
+// Outputer. This way MultiOutpit's event channel is passed to the
+// newly created Outputer, and the creation of the Outputer is
+// decoupled from MultiOutput
+func (mo *MultiOutput) AddExtMember(newOutFn OutputerFactory) error {
 	mo.membersMut.Lock()
 	defer mo.membersMut.Unlock()
 
