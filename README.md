@@ -1,4 +1,7 @@
+[![CircleCI](https://circleci.com/gh/tdimitrov/rpcap/tree/master.svg?style=svg)](https://circleci.com/gh/tdimitrov/rpcap/tree/master)
+
 # rpcap
+
 Remote network packet capturing tool which automates the generation of PCAP files from one or more remote machines.
 
 rpcap automates things like logging on the remote mahcine, executing a packet capturer (tcpdump), transferring the PCAP file to the local mahcine and executing a graphical tool (wireshark), which dislays the traffic in real time.
