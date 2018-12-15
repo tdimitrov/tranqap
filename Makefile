@@ -9,7 +9,7 @@ test:
 	go test -cover ./...
 
 clean:
-	rm rpcap
+	@rm rpcap || true
 
 dep:
 	go get golang.org/x/crypto/ssh
