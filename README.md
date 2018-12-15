@@ -52,6 +52,9 @@ go install  github.com/tdimitrov/rpcap
 ```
 At this point rpcap should be installer in `$GOPATH/bin`. This path should be added to system path.
 
+## Binary installation
+For each release rpm and deb packages are provided. Head to [releases](https://github.com/tdimitrov/rpcap/releases) tab of the project and download the package for your distribution.
+
 ## Configuration and usage
 rpcap looks for a file named config.json in the current working dir. A sample file can be found [here](samples/config.json).
 
