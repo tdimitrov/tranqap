@@ -112,11 +112,11 @@ func cmdWireshark(ctx *ishell.Context) {
 	capturers.AddNewOutput(factFn)
 }
 
-func cmdTargets(ctx *ishell.Context) {
+func cmdTargets(ctx *ishell.Context, configFile string) {
 	rplog.Info("Called targets command")
 
 	// Get configuration
-	config, err := getConfig("config.json")
+	config, err := getConfig(configFile)
 	if err != nil {
 		ctx.Printf("Error loading configuration: %s\n", err)
 		return

@@ -35,12 +35,25 @@ func main() {
 	})
 
 	shell.AddCmd(&ishell.Cmd{
-		Name: "start", Help: "start file capturing",
+		Name: "start",
+		Help: "start file capturing",
 		Func: func(ctx *ishell.Context) { cmdStart(ctx, *configFile) },
 	})
-	shell.AddCmd(&ishell.Cmd{Name: "stop", Help: "stop file capturing", Func: cmdStop})
-	shell.AddCmd(&ishell.Cmd{Name: "wireshark", Help: "fork wireshark for each capture", Func: cmdWireshark})
-	shell.AddCmd(&ishell.Cmd{Name: "targets", Help: "show information about loaded targets", Func: cmdTargets})
+	shell.AddCmd(&ishell.Cmd{
+		Name: "stop",
+		Help: "stop file capturing",
+		Func: cmdStop,
+	})
+	shell.AddCmd(&ishell.Cmd{
+		Name: "wireshark",
+		Help: "fork wireshark for each capture",
+		Func: cmdWireshark,
+	})
+	shell.AddCmd(&ishell.Cmd{
+		Name: "targets",
+		Help: "show information about loaded targets",
+		Func: func(ctx *ishell.Context) { cmdTargets(ctx, *configFile) },
+	})
 
 	shell.Run()
 	capturers.Close()
