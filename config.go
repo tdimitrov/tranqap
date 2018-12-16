@@ -33,7 +33,7 @@ func getConfig(fname string) (config, error) {
 
 	confFile, err := ioutil.ReadFile(fname)
 	if err != nil {
-		return conf, fmt.Errorf("Error opening %s: %s", fname, err.Error())
+		return conf, err
 	}
 
 	err = json.Unmarshal(confFile, &conf)
