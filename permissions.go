@@ -19,7 +19,7 @@ func cmdPermissions() string {
 		`
 	rpcap_permissions() {
 		printf "Check if tcpdump is installed: "
-		BIN=$(command -v tcpdump)
+		TCPDUMP_BIN=$(command -v tcpdump)
 		if [ $? -ne 0 ]
 		then
 			echo "NO"
@@ -28,7 +28,7 @@ func cmdPermissions() string {
 		fi
 
 		printf "Check if sudo is installed: "
-		BIN=$(command -v sudo)
+		SUDO_BIN=$(command -v sudo)
 		if [ $? -ne 0 ]
 		then
 			echo "NO"
@@ -46,7 +46,7 @@ func cmdPermissions() string {
 		fi
 
 		printf "Check if tcpdump has got cap_net_admin capabilities: "
-		getcap $BIN | grep cap_net_admin > /dev/null
+		getcap $TCPDUMP_BIN | grep cap_net_admin > /dev/null
 		if [ $? -ne 0 ]
 		then
 			echo "NO"
@@ -55,7 +55,7 @@ func cmdPermissions() string {
 		fi
 
 		printf "Check if tcpdump has got cap_net_raw+eip capabilities: "
-		getcap $BIN | grep 'cap_net_raw+eip' > /dev/null
+		getcap $TCPDUMP_BIN | grep 'cap_net_raw+eip' > /dev/null
 		if [ $? -ne 0 ]
 		then
 			echo "NO"
@@ -63,13 +63,13 @@ func cmdPermissions() string {
 			echo "Yes"
 		fi
 
-		BIN_USER=$(stat -c '%U' $BIN)
-		BIN_GROUP=$(stat -c '%G' $BIN)
+		TCPDUMP_USER=$(stat -c '%U' $TCPDUMP_BIN)
+		TCPDUMP_GROUP=$(stat -c '%G' $TCPDUMP_BIN)
 
-		if [[ "$(groups)" =~ "$BIN_GROUP" ]]
+		if [[ "$(groups)" =~ "$TCPDUMP_GROUP" ]]
 		then
 			echo "User is member of the binary's group: Yes"
-		elif [ "${USER}" == "${BIN_USER}" ]
+		elif [ "${USER}" == "${TCPDUMP_USER}" ]
 		then
 			echo "User is owner of the binary: Yes"
 		else
