@@ -22,9 +22,9 @@ For quite a lot of time this worked just fine for my needs, but the script has g
   * If wireshark is closed during capture, the only way to resume capture is to restart the whole trace.
   * Running the script for multiple machines is a bit tedious. The captures can be started with a script, but one should be careful killing them.
   * The script needs to be modified in order to work on different targets. E.g. on one machine tcpdump can be run as regular user, on another it requires sudo, etc. So it is hard to run multiple captures on machines, requiring different authentication/permissions.
-  
+
 ## What is rpcap and how it solves the problem
-rpcap is the bash script above on a very strong steroids. It's main purpose is to implement the functionality of the script in more intelligent and robust way. But in the same time rpcap should be as lean and simple as possible. 
+rpcap is the bash script above on a very strong steroids. It's main purpose is to implement the functionality of the script in more intelligent and robust way. But in the same time rpcap should be as lean and simple as possible.
 
 rpcap is driven by three main principles:
 1. Minimal dependencies and requirements for the target machine(s).
@@ -33,7 +33,7 @@ rpcap is driven by three main principles:
 
 What rpcap does:
 1. Reads a list of remote targets and configuration parameters from a JSON file. Each config file represents an environment/project/task.
-2. A connection to each target is established over SSH. 
+2. A connection to each target is established over SSH.
 3. A capturer (e.g. tcpdump) is run on each target.
 4. The resulting PCAP file is saved locally on disk and optionally it can be watched in real time with GUI packet analyser (e.g. wireshark).
 5. Handles starting and stopping of the capturer process and also the SSH connections.
@@ -43,7 +43,7 @@ What rpcap does:
 For the moment no prebuilt binaries are provided so the only installation option is from source.
 
 ## Installation from source
-rpcap is written in Go, so the Go distribution should be installed. Instructions for the installation can be found [here](https://golang.org/doc/install). 
+rpcap is written in Go, so the Go distribution should be installed. Instructions for the installation can be found [here](https://golang.org/doc/install).
 
 After that:
 ```bash
@@ -83,11 +83,12 @@ Check if tcpdump has got cap_net_admin capabilities: NO
 Check if tcpdump has got cap_net_raw+eip capabilities: NO
 User is member of the binary's group: Yes
 
-rpcap>  
+rpcap>
 ```
 * **start** - Executes the capturer on all remote targets. A PCAP file is saved to the destination directory and the old files are rotated.
 * **stop** - Stops the capturer on all targets.
 * **wireshark** - Starts a wireshark instance for each target. All traffic, which is saved on disk is also piped to wireshark, so it can be viewed in real  time.
+* **init** - Generates sample configuration in the current working directory.
 
 rpcap accepts two command line parameters:
 * -l - path to log file

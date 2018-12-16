@@ -54,6 +54,11 @@ func main() {
 		Help: "show information about loaded targets",
 		Func: func(ctx *ishell.Context) { cmdTargets(ctx, *configFile) },
 	})
+	shell.AddCmd(&ishell.Cmd{
+		Name: "init",
+		Help: "create empty config file",
+		Func: func(ctx *ishell.Context) { cmdCreateConfig(ctx, *configFile) },
+	})
 
 	shell.Run()
 	capturers.Close()

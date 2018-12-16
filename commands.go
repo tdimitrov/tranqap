@@ -1,6 +1,10 @@
 package main
 
 import (
+	"encoding/json"
+	"io/ioutil"
+	"os"
+
 	"github.com/abiosoft/ishell"
 	"github.com/tdimitrov/rpcap/capture"
 	"github.com/tdimitrov/rpcap/output"
@@ -138,5 +142,45 @@ func cmdTargets(ctx *ishell.Context, configFile string) {
 		}
 	}
 
+	return
+}
+
+func cmdCreateConfig(ctx *ishell.Context, path string) {
+	rplog.Info("Called config command")
+
+	if _, err := os.Stat(path); !os.IsNotExist(err) {
+		ctx.Printf("%s already exists. Will not overwrite existing config.\n", path)
+		return
+	}
+
+	name := "Target name. Informational identification only."
+	host := "Hostname/IP address of the target."
+	port := 22
+	login := "SSH login."
+	key := "Path to private key, used for authentication."
+	dest := "Path to destination dir for the PCAP files."
+	pattern := "Filename pattern for each pcap file. Index and file extension will be added to this string."
+	rotCnt := 5
+	useSudo := true
+
+	t := make([]target, 1, 1)
+	t[0] = target{&name, &host, &port, &login, &key, &dest, &pattern, &rotCnt, &useSudo}
+	conf := make(map[string][]target)
+	conf["targets"] = t
+
+	// And finally create the new file
+	confJSON, err := json.MarshalIndent(conf, "", "    ")
+	if err != nil {
+		ctx.Printf("Error serializing sample configuration: %s.\n", err)
+		return
+	}
+
+	err = ioutil.WriteFile(path, confJSON, 0644)
+	if err != nil {
+		ctx.Printf("Error writing sample configuration to file: %s.\n", err)
+		return
+	}
+
+	ctx.Printf("Saved sample configuration to %s\n", path)
 	return
 }
