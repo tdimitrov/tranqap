@@ -11,7 +11,7 @@ import (
 
 func main() {
 	var configFile = flag.String("c", "config.json", "config file to use")
-	var logFile = flag.String("l", "rpcap.log", "name of the log file")
+	var logFile = flag.String("l", "", "path to log file")
 
 	flag.Parse()
 
@@ -20,9 +20,11 @@ func main() {
 	shell.SetPrompt("rpcap> ")
 
 	// Create logger
-	printCb := func(f string, a ...interface{}) { shell.Printf(f, a...) }
-	if err := rplog.Init(*logFile, printCb); err != nil {
-		fmt.Printf("Error initialising logger: %s\nLog file won't be generated", err)
+	if len(*logFile) > 0 {
+		printCb := func(f string, a ...interface{}) { shell.Printf(f, a...) }
+		if err := rplog.Init(*logFile, printCb); err != nil {
+			fmt.Printf("Error initialising logger: %s\nLog file won't be generated", err)
+		}
 	}
 
 	// Initialise capturers storage
