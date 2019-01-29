@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 
 	"github.com/tdimitrov/rpcap/rplog"
 
@@ -10,10 +11,41 @@ import (
 )
 
 func main() {
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage:\n")
+		fmt.Fprintf(os.Stderr, "rpcap [global flags] [subcommand [subcommand flags]]\n\n")
+		fmt.Fprintf(os.Stderr, "Global flags:\n")
+		flag.PrintDefaults()
+		fmt.Fprintf(os.Stderr, "\nSubcommands:\n")
+		fmt.Fprintf(os.Stderr, "init - creates sample configuration file. Works with -c.\n")
+		fmt.Fprintf(os.Stderr, "\tE.g. \"%s -c config.json init\" - ", os.Args[0])
+		fmt.Fprintf(os.Stderr, "creates sample config named config.json in current working directory.\n")
+	}
+
 	var configFile = flag.String("c", "config.json", "config file to use")
 	var logFile = flag.String("l", "", "path to log file")
 
 	flag.Parse()
+
+	if len(flag.Args()) > 0 {
+		//subcommand
+		if len(flag.Args()) == 1 && flag.Arg(0) == "init" {
+			//init cmd
+			rplog.Info("Called config command")
+			err := generateSampleConfig(*configFile)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error generating sample config: %s\n", err.Error())
+			} else {
+				fmt.Printf("Saved sample configuration to %s\n", *configFile)
+			}
+			return
+		}
+
+		//bad cmd
+		fmt.Fprintf(os.Stderr, "Bad subcommand: %v\n", flag.Args())
+		flag.Usage()
+		return
+	}
 
 	// Create shell
 	shell := ishell.New()
@@ -55,11 +87,6 @@ func main() {
 		Name: "targets",
 		Help: "show information about loaded targets",
 		Func: func(ctx *ishell.Context) { cmdTargets(ctx, *configFile) },
-	})
-	shell.AddCmd(&ishell.Cmd{
-		Name: "init",
-		Help: "create empty config file",
-		Func: func(ctx *ishell.Context) { cmdCreateConfig(ctx, *configFile) },
 	})
 
 	shell.Run()

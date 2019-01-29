@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"os"
 
 	"github.com/tdimitrov/rpcap/rplog"
 
@@ -119,4 +120,38 @@ func getClientConfig(t *target) (*ssh.ClientConfig, *string, error) {
 	}
 
 	return &clientConfig, &dest, nil
+}
+
+func generateSampleConfig(path string) error {
+	if _, err := os.Stat(path); !os.IsNotExist(err) {
+		return fmt.Errorf("%s already exists. Will not overwrite existing config", path)
+	}
+
+	name := "Target name. Informational identification only."
+	host := "Hostname/IP address of the target."
+	port := 22
+	login := "SSH login."
+	key := "Path to private key, used for authentication."
+	dest := "Path to destination dir for the PCAP files."
+	pattern := "Filename pattern for each pcap file. Index and file extension will be added to this string."
+	rotCnt := 5
+	useSudo := true
+
+	t := make([]target, 1, 1)
+	t[0] = target{&name, &host, &port, &login, &key, &dest, &pattern, &rotCnt, &useSudo}
+	conf := make(map[string][]target)
+	conf["targets"] = t
+
+	// And finally create the new file
+	confJSON, err := json.MarshalIndent(conf, "", "    ")
+	if err != nil {
+		return fmt.Errorf("Error serializing sample configuration: %s", err)
+	}
+
+	err = ioutil.WriteFile(path, confJSON, 0644)
+	if err != nil {
+		return fmt.Errorf("Error writing sample configuration to file: %s", err)
+	}
+
+	return nil
 }

@@ -88,8 +88,12 @@ rpcap>
 * **start** - Executes the capturer on all remote targets. A PCAP file is saved to the destination directory and the old files are rotated.
 * **stop** - Stops the capturer on all targets.
 * **wireshark** - Starts a wireshark instance for each target. All traffic, which is saved on disk is also piped to wireshark, so it can be viewed in real  time.
-* **init** - Generates sample configuration in the current working directory.
 
 rpcap accepts two command line parameters:
 * -l - path to log file
 * -c - path to config file
+
+Sample configuration file can be generated via init subcommand.
+```bash
+rpcap -c config.json init
+```
