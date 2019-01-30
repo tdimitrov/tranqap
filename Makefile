@@ -8,6 +8,9 @@ build:
 test:
 	go test -cover ./...
 
+cyclo:
+	gocyclo . capture output rplog
+
 clean:
 	@rm rpcap || true
 
