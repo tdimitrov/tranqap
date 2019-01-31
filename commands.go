@@ -33,7 +33,7 @@ func getSudoConfig(t target) capture.SudoConfig {
 	return ret
 }
 
-func cmdStart(ctx *ishell.Context, configFile string) {
+func cmdStart(ctx *ishell.Context, cfg config) {
 	// Check if there is a running job
 	if capturers.Empty() == false {
 		ctx.Println("There is alreaedy a running capture")
@@ -42,14 +42,7 @@ func cmdStart(ctx *ishell.Context, configFile string) {
 
 	rplog.Info("Called start command")
 
-	// Get configuration
-	config, err := getConfig(configFile)
-	if err != nil {
-		ctx.Printf("Error loading configuration. %s\n", err)
-		return
-	}
-
-	for _, t := range config.Targets {
+	for _, t := range cfg.Targets {
 		c, d, err := getClientConfig(&t)
 		if err != nil {
 			ctx.Printf("Error parsing client configuration for target <%s>: %s\n", *t.Name, err)
@@ -112,17 +105,10 @@ func cmdWireshark(ctx *ishell.Context) {
 	capturers.AddNewOutput(factFn)
 }
 
-func cmdTargets(ctx *ishell.Context, configFile string) {
+func cmdTargets(ctx *ishell.Context, cfg config) {
 	rplog.Info("Called targets command")
 
-	// Get configuration
-	config, err := getConfig(configFile)
-	if err != nil {
-		ctx.Printf("Error loading configuration: %s\n", err)
-		return
-	}
-
-	for _, t := range config.Targets {
+	for _, t := range cfg.Targets {
 		c, d, err := getClientConfig(&t)
 		if err != nil {
 			ctx.Printf("Error parsing client configuration for target <%s>: %s\n", *t.Name, err)

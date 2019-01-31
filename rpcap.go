@@ -47,6 +47,14 @@ func main() {
 		return
 	}
 
+	// Get configuration
+	config, err := getConfig(*configFile)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error loading configuration. %s\n", err)
+		fmt.Fprintf(os.Stderr, "Run %s init or provide path to a configuration file with -c.\n", os.Args[0])
+		return
+	}
+
 	// Create shell
 	shell := ishell.New()
 	shell.SetPrompt("rpcap> ")
@@ -71,7 +79,7 @@ func main() {
 	shell.AddCmd(&ishell.Cmd{
 		Name: "start",
 		Help: "start file capturing",
-		Func: func(ctx *ishell.Context) { cmdStart(ctx, *configFile) },
+		Func: func(ctx *ishell.Context) { cmdStart(ctx, config) },
 	})
 	shell.AddCmd(&ishell.Cmd{
 		Name: "stop",
@@ -86,7 +94,7 @@ func main() {
 	shell.AddCmd(&ishell.Cmd{
 		Name: "targets",
 		Help: "show information about loaded targets",
-		Func: func(ctx *ishell.Context) { cmdTargets(ctx, *configFile) },
+		Func: func(ctx *ishell.Context) { cmdTargets(ctx, config) },
 	})
 
 	shell.Run()
