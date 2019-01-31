@@ -12,7 +12,7 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-type config struct {
+type configParams struct {
 	Targets []target
 }
 
@@ -28,8 +28,8 @@ type target struct {
 	UseSudo     *bool   `json:"Use sudo"`
 }
 
-func getConfig(fname string) (config, error) {
-	var conf config
+func getConfig(fname string) (configParams, error) {
+	var conf configParams
 	var err error
 
 	confFile, err := ioutil.ReadFile(fname)

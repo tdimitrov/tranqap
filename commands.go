@@ -33,7 +33,7 @@ func getSudoConfig(t target) capture.SudoConfig {
 	return ret
 }
 
-func cmdStart(ctx *ishell.Context, cfg config) {
+func cmdStart(ctx *ishell.Context, cfg configParams) {
 	// Check if there is a running job
 	if capturers.Empty() == false {
 		ctx.Println("There is alreaedy a running capture")
@@ -105,7 +105,7 @@ func cmdWireshark(ctx *ishell.Context) {
 	capturers.AddNewOutput(factFn)
 }
 
-func cmdTargets(ctx *ishell.Context, cfg config) {
+func cmdTargets(ctx *ishell.Context, cfg configParams) {
 	rplog.Info("Called targets command")
 
 	for _, t := range cfg.Targets {
