@@ -51,7 +51,7 @@ func TestStorageAdd(t *testing.T) {
 	}
 
 	// Check if it is the same
-	if storage.capturers[0] != capt {
+	if storage.capturers[capt.Name()] != capt {
 		t.Errorf("Saved capturer doesn't match with the created capturer\n")
 	}
 }
@@ -71,8 +71,8 @@ func TestStorageStopAll(t *testing.T) {
 	// Stop all
 	ch := storage.GetChan() // on this chan events from the Capturers are received
 
-	ch <- CapturerEvent{capt, CapturerStopped} // simulate a capturer stop
-	storage.StopAll()                          // because StopAll() will wait for event
+	ch <- CapturerEvent{capt.Name(), CapturerStopped} // simulate a capturer stop
+	storage.StopAll()                                 // because StopAll() will wait for event
 
 	if capt.isStarted == true { // check if capturer is actually stopped
 		t.Errorf("Saved capturer is not stopped\n")

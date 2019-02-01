@@ -3,6 +3,8 @@ package output
 import (
 	"errors"
 	"sync"
+
+	"github.com/tdimitrov/rpcap/rplog"
 )
 
 // PCAP header is a struct like this:
@@ -150,6 +152,7 @@ func (mo *MultiOutput) eventHandler() {
 		for i, c := range mo.members {
 			if c == event.from {
 				mo.members = append(mo.members[:i], mo.members[i+1:]...)
+				rplog.Info("Outputer stopped.")
 				mo.wg.Done()
 				break
 			}

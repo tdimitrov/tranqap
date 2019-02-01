@@ -1,6 +1,7 @@
 package capture
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/tdimitrov/rpcap/output"
@@ -9,7 +10,7 @@ import (
 
 // Storage is a thread safe container for Capturers.
 type Storage struct {
-	capturers       []Capturer
+	capturers       map[string]Capturer
 	mut             sync.Mutex
 	events          CapturerEventChan
 	wg              sync.WaitGroup
@@ -19,7 +20,7 @@ type Storage struct {
 // NewStorage creates a Storage instance
 func NewStorage() *Storage {
 	ret := &Storage{
-		[]Capturer{},
+		make(map[string]Capturer),
 		sync.Mutex{},
 		make(CapturerEventChan, 1),
 		sync.WaitGroup{},
@@ -37,12 +38,19 @@ func (c *Storage) GetChan() CapturerEventChan {
 }
 
 // Add appends new Capturer to the container
-func (c *Storage) Add(newCapt Capturer) {
+func (c *Storage) Add(newCapt Capturer) error {
 	c.mut.Lock()
 	defer c.mut.Unlock()
 
-	c.capturers = append(c.capturers, newCapt)
+	_, exists := c.capturers[newCapt.Name()]
+	if exists == true {
+		return fmt.Errorf("capturer [%s] already exists", newCapt.Name())
+	}
+
+	c.capturers[newCapt.Name()] = newCapt
 	c.wg.Add(1)
+
+	return nil
 }
 
 // StopAll calls Stop() on each Capturer in the container
@@ -104,16 +112,11 @@ func (c *Storage) eventHandler() {
 
 	rplog.Info("capture.Storage: Starting eventHandler main loop")
 	for e := range c.events {
-		rplog.Info("Storage: got an event from %s", e.from.Name())
+		rplog.Info("Storage: got an event from %s", e.from)
 		c.mut.Lock()
-		for i, capt := range c.capturers {
-			if capt == e.from {
-				rplog.Info("Storage: Removed %s", e.from.Name())
-				c.capturers = append(c.capturers[:i], c.capturers[i+1:]...)
-				c.wg.Done()
-				break
-			}
-		}
+		delete(c.capturers, e.from)
+		rplog.Info("Storage: Removed %s", e.from)
+		c.wg.Done()
 		c.mut.Unlock()
 	}
 

@@ -16,7 +16,7 @@ const (
 // from - the address of the Capturer struct in memory. It is used to identify the Capturer
 // event - the type of the event. This value should be equal on one of the consts above.
 type CapturerEvent struct {
-	from  Capturer
+	from  string
 	event int
 }
 

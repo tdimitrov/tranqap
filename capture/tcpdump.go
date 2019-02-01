@@ -121,19 +121,19 @@ func (capt *Tcpdump) startSession() {
 	err = capt.trans.Run(capt.captureCmd, capt.out, capt.pid)
 	if err != nil {
 		rplog.Error("Session error for %s. Can't run tcpdump command: %s", capt.Name(), err)
-		capt.onDie <- CapturerEvent{capt, CapturerDead}
+		capt.onDie <- CapturerEvent{capt.Name(), CapturerDead}
 		return
 	}
 
 	if capt.pid.GetPid() != -1 {
 		// PID is not cleared - this is unexpected stop
-		capt.onDie <- CapturerEvent{capt, CapturerDead}
+		capt.onDie <- CapturerEvent{capt.Name(), CapturerDead}
 		rplog.Error("Session error for %s. Process died unexpectedly. Dumping stderr:\n%s",
 			capt.Name(), capt.pid.DumpStdErr())
 		rplog.Feedback("Capturer %s died. stderr:\n%s", capt.Name(), capt.pid.DumpStdErr())
 	} else {
 		rplog.Info("Session info for %s: process killed by command", capt.Name())
-		capt.onDie <- CapturerEvent{capt, CapturerStopped}
+		capt.onDie <- CapturerEvent{capt.Name(), CapturerStopped}
 	}
 
 	return

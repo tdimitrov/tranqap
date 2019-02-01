@@ -72,7 +72,7 @@ func TestTcpdumpStop(t *testing.T) {
 	trans.finish <- struct{}{}
 	ev := <-events
 
-	if ev.from != inst {
+	if ev.from != inst.Name() {
 		t.Errorf("Got event with wrong from")
 	}
 
@@ -98,7 +98,7 @@ func TestTcpdumpDie(t *testing.T) {
 	trans.finish <- struct{}{}
 	ev := <-events
 
-	if ev.from != inst {
+	if ev.from != inst.Name() {
 		t.Errorf("Got event with wrong from")
 	}
 
@@ -122,7 +122,7 @@ func TestTcpdumpFailOnRun(t *testing.T) {
 
 	ev := <-events
 
-	if ev.from != inst {
+	if ev.from != inst.Name() {
 		t.Errorf("Got event with wrong from")
 	}
 
