@@ -95,14 +95,14 @@ func cmdStop(ctx *ishell.Context) {
 }
 
 func cmdWireshark(ctx *ishell.Context) {
-	rplog.Info("Called wireshark command")
+	rplog.Info("Called wireshark command with args %v", ctx.Args)
 
 	// Prepare a factory function, which creates Wireshark Outputer
 	factFn := func(p output.MOEventChan) output.Outputer {
 		return output.NewWsharkOutput(p)
 	}
 
-	capturers.AddNewOutput(factFn)
+	capturers.AddNewOutput(factFn, ctx.Args)
 }
 
 func cmdTargets(ctx *ishell.Context, cfg configParams) {

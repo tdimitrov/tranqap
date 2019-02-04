@@ -55,7 +55,7 @@ func NewTcpdump(name string, outer *output.MultiOutput, subsc CapturerEventChan,
 	cmd.WriteString(cmdGetPid())
 
 	return &Tcpdump{
-		fmt.Sprintf("<%s>", name),
+		name,
 		cmd.String(),
 		newStdErrHandler(),
 		outer,

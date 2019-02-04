@@ -86,15 +86,34 @@ func (c *Storage) Close() {
 	rplog.Info("Storage terminated")
 }
 
-// AddNewOutput adds new Outputer to each capturer
-func (c *Storage) AddNewOutput(factFn output.OutputerFactory) {
+// AddNewOutput adds new Outputer to each capturer.
+// Input parameters:
+// factFn - lambda function, which accepts event channel as parameter and returns
+//			new outputter. The idea is to avoid a dependency between capture and
+//			output packages
+// targets - slice with the names of all targets, for which the outputer should be
+//			started. Empty slice means 'start for each capturer'.
+func (c *Storage) AddNewOutput(factFn output.OutputerFactory, targets []string) {
 	c.mut.Lock()
 	defer c.mut.Unlock()
 
-	for _, c := range c.capturers {
-		err := c.AddOutputer(factFn)
-		if err != nil {
-			rplog.Error("Error adding Outputer to capturer %s", c.Name())
+	if len(targets) == 0 {
+		for _, capt := range c.capturers {
+			err := capt.AddOutputer(factFn)
+			if err != nil {
+				rplog.Error("Error adding Outputer to capturer %s", capt.Name())
+			}
+		}
+	} else {
+		for _, t := range targets {
+			if capt, ok := c.capturers[t]; ok {
+				err := capt.AddOutputer(factFn)
+				if err != nil {
+					rplog.Error("Error adding Outputer to capturer %s", capt.Name())
+				}
+			} else {
+				rplog.Feedback("Target <%s> doesn't exist.\n", t)
+			}
 		}
 	}
 }
