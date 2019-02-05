@@ -155,3 +155,13 @@ func generateSampleConfig(path string) error {
 
 	return nil
 }
+
+func (cp *configParams) getTargetsList() []string {
+	targets := make([]string, 0, len(cp.Targets))
+
+	for _, t := range cp.Targets {
+		targets = append(targets, *t.Name)
+	}
+
+	return targets
+}

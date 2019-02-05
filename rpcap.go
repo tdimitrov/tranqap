@@ -54,6 +54,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Run %s init or provide path to a configuration file with -c.\n", os.Args[0])
 		return
 	}
+	targetsList := config.getTargetsList()
 
 	// Create shell
 	shell := ishell.New()
@@ -90,6 +91,9 @@ func main() {
 		Name: "wireshark",
 		Help: "fork wireshark for each capture",
 		Func: cmdWireshark,
+		Completer: func([]string) []string {
+			return targetsList
+		},
 	})
 	shell.AddCmd(&ishell.Cmd{
 		Name: "targets",
