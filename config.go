@@ -28,13 +28,29 @@ type target struct {
 	UseSudo     *bool   `json:"Use sudo"`
 }
 
-func getConfig(fname string) (configParams, error) {
+func checkForDuplicates(config configParams) error {
+	nameSet := make(map[string]struct{})
+
+	for _, t := range config.Targets {
+		_, exists := nameSet[*t.Name]
+
+		if exists == true {
+			return fmt.Errorf("target %s is defined more than once", *t.Name)
+		}
+
+		nameSet[*t.Name] = struct{}{}
+	}
+
+	return nil
+}
+
+func readConfigFromFile(fname string) (configParams, error) {
 	var conf configParams
 	var err error
 
 	confFile, err := ioutil.ReadFile(fname)
 	if err != nil {
-		return conf, err
+		return conf, fmt.Errorf("%s. Run init subcommand to generate empty config or provide path to existing config with -c", err.Error())
 	}
 
 	err = json.Unmarshal(confFile, &conf)
@@ -42,8 +58,13 @@ func getConfig(fname string) (configParams, error) {
 		return conf, fmt.Errorf("Error parsing %s: %s", fname, err.Error())
 	}
 
+	// Basic validation
 	if len(conf.Targets) == 0 {
 		return conf, fmt.Errorf("No targets defined in config")
+	}
+
+	if err := checkForDuplicates(conf); err != nil {
+		return conf, err
 	}
 
 	return conf, nil

@@ -78,7 +78,9 @@ func cmdStart(ctx *ishell.Context, cfg configParams) {
 			return
 		}
 
-		capturers.Add(capt)
+		if err := capturers.Add(capt); err != nil {
+			ctx.Printf("Error adding capturer: %s", err.Error())
+		}
 	}
 }
 

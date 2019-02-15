@@ -48,10 +48,9 @@ func main() {
 	}
 
 	// Get configuration
-	config, err := getConfig(*configFile)
+	config, err := readConfigFromFile(*configFile)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error loading configuration. %s\n", err)
-		fmt.Fprintf(os.Stderr, "Run %s init or provide path to a configuration file with -c.\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Error loading configuration: %s\n", err)
 		return
 	}
 	targetsList := config.getTargetsList()
