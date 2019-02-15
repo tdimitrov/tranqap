@@ -61,11 +61,9 @@ func main() {
 	shell.SetPrompt("rpcap> ")
 
 	// Create logger
-	if len(*logFile) > 0 {
-		printCb := func(f string, a ...interface{}) { shell.Printf(f, a...) }
-		if err := rplog.Init(*logFile, printCb); err != nil {
-			fmt.Printf("Error initialising logger: %s\nLog file won't be generated", err)
-		}
+	printCb := func(f string, a ...interface{}) { shell.Printf(f, a...) }
+	if err := rplog.Init(*logFile, printCb); err != nil {
+		fmt.Printf("Error initialising logger: %s\nLog file won't be generated", err)
 	}
 
 	// Initialise capturers storage

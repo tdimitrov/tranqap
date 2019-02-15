@@ -66,7 +66,9 @@ func (c *Storage) StopAll() {
 	c.mut.Lock()
 	for _, c := range c.capturers {
 		if err := c.Stop(); err != nil {
-			rplog.Feedback("Can't stop %s. %s", c.Name(), err)
+			errMsg := fmt.Sprintf("Can't stop %s. %s", c.Name(), err)
+			rplog.Error(errMsg)
+			rplog.Feedback(errMsg)
 		}
 	}
 	c.mut.Unlock()
@@ -112,7 +114,9 @@ func (c *Storage) AddNewOutput(factFn output.OutputerFactory, targets []string) 
 					rplog.Error("Error adding Outputer to capturer %s", capt.Name())
 				}
 			} else {
-				rplog.Feedback("Target <%s> doesn't exist.\n", t)
+				errMsg := fmt.Sprintf("Target <%s> doesn't exist.\n", t)
+				rplog.Feedback(errMsg)
+				rplog.Error(errMsg)
 			}
 		}
 	}
