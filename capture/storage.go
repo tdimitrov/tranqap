@@ -100,6 +100,16 @@ func (c *Storage) AddNewOutput(factFn output.OutputerFactory, targets []string) 
 	defer c.mut.Unlock()
 
 	if len(targets) == 0 {
+		// wireshark cmd is called without arguments. Start outputer for each capturer
+
+		//Check if there are running captureres
+		if len(c.capturers) == 0 {
+			rplog.Error("wireshark called without arguments, but no capturers are running.")
+			rplog.Feedback("There are no running capturers. Use start first.\n")
+			return
+		}
+
+		//Add outputer for each capturer
 		for _, capt := range c.capturers {
 			err := capt.AddOutputer(factFn)
 			if err != nil {
@@ -107,6 +117,7 @@ func (c *Storage) AddNewOutput(factFn output.OutputerFactory, targets []string) 
 			}
 		}
 	} else {
+		// wireshark cmd is called for specific target(s). Start outputer only for them.
 		for _, t := range targets {
 			if capt, ok := c.capturers[t]; ok {
 				err := capt.AddOutputer(factFn)
