@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"net"
 
 	"golang.org/x/crypto/ssh"
 )
@@ -50,6 +51,35 @@ func (c *SSHClient) Run(cmd string, stdout io.Writer, stderr io.Writer) error {
 	err = session.Run(cmd)
 	if err != nil {
 		return fmt.Errorf("Error running '%s': %s", cmd, err)
+	}
+
+	return nil
+}
+
+// GetRemoteIP returns the IP address of the target which the SSH connection uses.
+// It is useful for the cases when a hostname is specified in the configuration.
+// For such situatuons the exact IP address is needed for the capture filter.
+func (c *SSHClient) GetRemoteIP() *string {
+	if c.client == nil {
+		return nil
+	}
+
+	if addr := c.client.RemoteAddr(); addr != nil {
+		ret := c.client.LocalAddr().(*net.TCPAddr).IP.String()
+		return &ret
+	}
+
+	return nil
+}
+
+// GetRemotePort returns the port number of the SSH target
+func (c *SSHClient) GetRemotePort() *int {
+	if c.client == nil {
+		return nil
+	}
+
+	if addr := c.client.RemoteAddr(); addr != nil {
+		return &c.client.LocalAddr().(*net.TCPAddr).Port
 	}
 
 	return nil

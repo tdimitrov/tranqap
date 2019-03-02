@@ -40,6 +40,16 @@ func (trans *transportMock) Connect() error {
 	return nil
 }
 
+func (trans *transportMock) GetRemoteIP() *string {
+	ret := "127.0.0.1"
+	return &ret
+}
+
+func (trans *transportMock) GetRemotePort() *int {
+	ret := 22
+	return &ret
+}
+
 func (trans *transportMock) Run(cmd string, stdout io.Writer, stderr io.Writer) error {
 	if trans.failOnRun == true {
 		return fmt.Errorf("Something went wrong")

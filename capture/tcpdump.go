@@ -13,6 +13,8 @@ type captureTransport interface {
 	IsActive() bool
 	Connect() error
 	Run(cmd string, stdout io.Writer, stderr io.Writer) error
+	GetRemoteIP() *string
+	GetRemotePort() *int
 }
 
 // Tcpdump is Capturer implementation for tcpdump
@@ -38,7 +40,7 @@ type SudoConfig struct {
 // NewTcpdump creates Tcpdump Capturer
 func NewTcpdump(name string, outer *output.MultiOutput, subsc CapturerEventChan, trans captureTransport, sudo SudoConfig) Capturer {
 	const sudoCmd = "sudo -n "
-	const captureCmd = "tcpdump -U -s0 -w - 'not port 22'"
+	const captureCmd = "tcpdump -U -s0 -w - 'not (host %s and port %d)'"
 	const dropPriviledges = " -Z "
 	const runInBackground = " & "
 
@@ -113,12 +115,22 @@ func (capt *Tcpdump) AddOutputer(newOutputerFn output.OutputerFactory) error {
 }
 
 func (capt *Tcpdump) startSession() {
-	//fmt.Println(client.LocalAddr().(*net.TCPAddr).IP)
 	var err error
 
 	defer capt.out.Close()
 
-	err = capt.trans.Run(capt.captureCmd, capt.out, capt.pid)
+	// Prepare tcpdump filter
+	ip := capt.trans.GetRemoteIP()
+	port := capt.trans.GetRemotePort()
+	if ip == nil || port == nil {
+		rplog.Error("Session error for %s. Can't get remote IP/port from transport.", capt.Name())
+		capt.onDie <- CapturerEvent{capt.Name(), CapturerDead}
+		return
+	}
+	cmd := fmt.Sprintf(capt.captureCmd, *ip, *port)
+
+	// Run capturer
+	err = capt.trans.Run(cmd, capt.out, capt.pid)
 	if err != nil {
 		rplog.Error("Session error for %s. Can't run tcpdump command: %s", capt.Name(), err)
 		capt.onDie <- CapturerEvent{capt.Name(), CapturerDead}
