@@ -3,7 +3,7 @@ BINARY_NAME=rpcap
 all: build test
 
 build:
-	go build -o $(BINARY_NAME)
+	go build -o $(BINARY_NAME) ./cmd/rpcap
 
 test:
 	go test -cover ./...
