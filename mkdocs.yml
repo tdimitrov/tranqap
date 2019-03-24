@@ -1,0 +1,14 @@
+site_name: rpcap
+theme: readthedocs
+nav:
+    - Home: index.md
+    - Installation: install.md
+    - Quick Start: quickstart.md
+    - Configuration file: config.md
+    - Command line options: cmd.md
+    - Shell commands:
+        - targets: cmd_targets.md
+        - start: cmd_start.md
+        - stop: cmd_stop.md
+        - wireshark: cmd_wireshark.md
+        - Other shell commands: cmd_other.md
