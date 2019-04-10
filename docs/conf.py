@@ -20,7 +20,7 @@
 project = 'rpcap'
 copyright = '2019, Tsvetomir Dimitrov'
 author = 'Tsvetomir Dimitrov'
-
+master_doc = 'index'
 
 # -- General configuration ---------------------------------------------------
 
