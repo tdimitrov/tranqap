@@ -41,6 +41,6 @@ What rpcap does:
 6. Checks if the user, set in the config file, has sufficient permissions to run the capturer.
 
 # Learn more
-[Documentation](https://http://rpcap.readthedocs.io)
+[Documentation](https://rpcap.readthedocs.io)
 
 [Downloads](https://github.com/tdimitrov/rpcap/releases)
