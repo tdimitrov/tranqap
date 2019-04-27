@@ -1,4 +1,5 @@
 [![CircleCI](https://circleci.com/gh/tdimitrov/rpcap/tree/master.svg?style=svg)](https://circleci.com/gh/tdimitrov/rpcap/tree/master)
+[![Documentation Status](https://readthedocs.org/projects/rpcap/badge/?version=latest)](https://rpcap.readthedocs.io/en/latest/?badge=latest)
 
 # rpcap
 
