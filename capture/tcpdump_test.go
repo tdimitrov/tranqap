@@ -68,7 +68,7 @@ func createTestInstances() (CapturerEventChan, *transportMock, Capturer, *output
 	trans := transportMock{false, false, false, make(chan struct{}, 1)}
 	out := &outputMock{false}
 
-	inst := NewTcpdump("Test Instance", output.NewMultiOutput(out), events, &trans, SudoConfig{false, nil})
+	inst := NewTcpdump("Test Instance", output.NewMultiOutput(out), events, &trans, SudoConfig{false, nil}, FilterConfig{nil})
 
 	return events, &trans, inst, out
 }

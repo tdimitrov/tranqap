@@ -30,6 +30,7 @@ type target struct {
 	FilePattern *string `json:"File Pattern"`
 	RotationCnt *int    `json:"File Rotation Count"`
 	UseSudo     *bool   `json:"Use sudo"`
+	FilterPort  *int    `json:"Filter port"`
 }
 
 func checkForDuplicates(config configParams) error {
@@ -122,6 +123,12 @@ func getClientConfig(t *target) (*ssh.ClientConfig, *string, error) {
 		*t.UseSudo = false
 	}
 
+	if t.FilterPort != nil {
+		if *t.FilterPort < 1 || *t.FilterPort > 65535 {
+			return nil, nil, fmt.Errorf("Invalid port number for Filter port parameter: %d. Expected value between 1 and 65535.", *t.FilterPort)
+		}
+	}
+
 	dest := fmt.Sprintf("%s:%d", *t.Host, *t.Port)
 
 	clientConfig.User = *t.User
@@ -161,9 +168,10 @@ func generateSampleConfig(path string) error {
 	pattern := "Filename pattern for each pcap file. Index and file extension will be added to this string."
 	rotCnt := 5
 	useSudo := true
+	filterPort := 22
 
 	t := make([]target, 1, 1)
-	t[0] = target{&name, &host, &port, &login, &key, &dest, &pattern, &rotCnt, &useSudo}
+	t[0] = target{&name, &host, &port, &login, &key, &dest, &pattern, &rotCnt, &useSudo, &filterPort}
 	conf := make(map[string][]target)
 	conf["targets"] = t
 

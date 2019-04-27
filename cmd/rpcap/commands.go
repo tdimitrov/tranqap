@@ -37,10 +37,14 @@ func getSudoConfig(t target) capture.SudoConfig {
 	return ret
 }
 
+func getFilterConfig(t target) capture.FilterConfig {
+	return capture.FilterConfig{t.FilterPort}
+}
+
 func cmdStart(ctx *ishell.Context, cfg configParams) {
 	// Check if there is a running job
 	if capturers.Empty() == false {
-		ctx.Println("There is alreaedy a running capture")
+		ctx.Println("There is already a running capture")
 		return
 	}
 
@@ -71,7 +75,7 @@ func cmdStart(ctx *ishell.Context, cfg configParams) {
 		sshClient := NewSSHClient(*d, *c)
 
 		// Create capturer
-		capt := capture.NewTcpdump(*t.Name, m, capturers.GetChan(), sshClient, getSudoConfig(t))
+		capt := capture.NewTcpdump(*t.Name, m, capturers.GetChan(), sshClient, getSudoConfig(t), getFilterConfig(t))
 		if capt == nil {
 			ctx.Printf("Error creating Capturer for target <%s>\n", *t.Name)
 			return

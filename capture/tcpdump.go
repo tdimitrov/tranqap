@@ -30,6 +30,7 @@ type Tcpdump struct {
 	onDie      CapturerEventChan
 	trans      captureTransport
 	useSudo    bool
+	filter     FilterConfig
 }
 
 // SudoConfig contains config params regarding sudo usage.
@@ -41,10 +42,19 @@ type SudoConfig struct {
 	Username *string
 }
 
+// FilterConfig contains Port, which is set as tcpdump capture
+// filter. This is useful for the cases when the target is behind NAT and is
+// accessed via port and/or IP redirection. If so, the port used to connect
+// to the target will differ from the actual on which the SSH service is
+// bound.
+type FilterConfig struct {
+	Port *int
+}
+
 // NewTcpdump creates Tcpdump Capturer
-func NewTcpdump(name string, outer *output.MultiOutput, subsc CapturerEventChan, trans captureTransport, sudo SudoConfig) Capturer {
+func NewTcpdump(name string, outer *output.MultiOutput, subsc CapturerEventChan, trans captureTransport, sudo SudoConfig, filter FilterConfig) Capturer {
 	const sudoCmd = "sudo -n "
-	const captureCmd = "tcpdump -U -s0 -w - 'not (host %s and port %d)'"
+	const captureCmd = "tcpdump -U -s0 -w - 'not port %d'"
 	const dropPriviledges = " -Z "
 	const runInBackground = " & "
 
@@ -68,6 +78,7 @@ func NewTcpdump(name string, outer *output.MultiOutput, subsc CapturerEventChan,
 		subsc,
 		trans,
 		sudo.Use,
+		filter,
 	}
 }
 
@@ -123,15 +134,19 @@ func (capt *Tcpdump) startSession() {
 
 	defer capt.out.Close()
 
-	// Prepare tcpdump filter
-	ip := capt.trans.GetRemoteIP()
+	// Prepare tcpdump filter - by default use the values from transport
 	port := capt.trans.GetRemotePort()
-	if ip == nil || port == nil {
-		rplog.Error("Session error for %s. Can't get remote IP/port from transport.", capt.Name())
+	if capt.filter.Port != nil {
+		// unless there is an explicitly set filter
+		port = capt.filter.Port
+	}
+
+	if port == nil {
+		rplog.Error("Session error for %s. Can't get remote port from transport.", capt.Name())
 		capt.onDie <- CapturerEvent{capt.Name(), CapturerDead}
 		return
 	}
-	cmd := fmt.Sprintf(capt.captureCmd, *ip, *port)
+	cmd := fmt.Sprintf(capt.captureCmd, *port)
 
 	// Run capturer
 	err = capt.trans.Run(cmd, capt.out, capt.pid)

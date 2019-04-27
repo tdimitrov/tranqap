@@ -1,0 +1,28 @@
+{
+    "targets": [
+        {
+            "Name": "alpha",
+            "Host": "127.0.0.1",
+            "Port": 4841,
+            "User": "vagrant",
+            "Key": ".vagrant/machines/alpha/virtualbox/private_key",
+            "Destination": "pcaps/",
+            "File Pattern": "alpha",
+            "File Rotation Count": 3,
+            "Use sudo": true,
+            "Filter port": 22
+        },
+        {
+            "Name": "beta",
+            "Host": "127.0.0.1",
+            "Port": 4842,
+            "User": "vagrant",
+            "Key": ".vagrant/machines/beta/virtualbox/private_key",
+            "Destination": "pcaps/",
+            "File Pattern": "beta",
+            "File Rotation Count": 3,
+            "Use sudo": true,
+            "Filter port": 22
+        }
+    ]
+}

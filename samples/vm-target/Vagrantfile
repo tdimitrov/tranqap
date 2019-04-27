@@ -7,11 +7,23 @@ sudo systemctl start sshd
 SCRIPT
 
 Vagrant.configure("2") do |config|
-  config.vm.provider "virtualbox" do |v|
-    v.customize [ "modifyvm", :id, "--uartmode1", "disconnected" ]
+  config.vm.define "alpha" do |alpha|
+    alpha.vm.provider "virtualbox" do |v|
+      v.customize [ "modifyvm", :id, "--uartmode1", "disconnected" ]
+    end
+    alpha.vm.box = "ubuntu/xenial64"
+    alpha.vm.network "forwarded_port", guest: 22, host: 4841
+    alpha.vm.hostname = "alpha"
+    alpha.vm.provision "shell", inline: $script
   end
-  config.vm.box = "ubuntu/xenial64"
-  config.vm.network "forwarded_port", guest: 22, host: 4841
-  config.vm.hostname = "target"
-  config.vm.provision "shell", inline: $script
+
+  config.vm.define "beta" do |beta|
+    beta.vm.provider "virtualbox" do |v|
+      v.customize [ "modifyvm", :id, "--uartmode1", "disconnected" ]
+    end
+    beta.vm.box = "ubuntu/xenial64"
+    beta.vm.network "forwarded_port", guest: 22, host: 4842
+    beta.vm.hostname = "beta"
+    beta.vm.provision "shell", inline: $script
+  end
 end
