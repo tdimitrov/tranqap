@@ -5,6 +5,9 @@ all: build test
 build:
 	go build -o $(BINARY_NAME) ./cmd/rpcap
 
+install:
+	go install ./cmd/rpcap
+
 test:
 	go test -cover ./...
 
