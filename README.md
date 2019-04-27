@@ -1,7 +1,6 @@
+# rpcap
 [![CircleCI](https://circleci.com/gh/tdimitrov/rpcap/tree/master.svg?style=svg)](https://circleci.com/gh/tdimitrov/rpcap/tree/master)
 [![Documentation Status](https://readthedocs.org/projects/rpcap/badge/?version=latest)](https://rpcap.readthedocs.io/en/latest/?badge=latest)
-
-# rpcap
 
 Remote network packet capturing tool which automates the generation of PCAP files from one or more remote machines.
 
