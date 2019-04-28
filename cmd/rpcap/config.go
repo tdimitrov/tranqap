@@ -97,7 +97,9 @@ func getClientConfig(t *target) (*ssh.ClientConfig, *string, error) {
 	}
 
 	if t.Port == nil {
-		return nil, nil, fmt.Errorf("Missing port for target <%s> in configuration", *t.Name)
+		rplog.Info("Port not set for target <%s>. Setting to 22.\n", *t.Name)
+		t.Port = new(int)
+		*t.Port = 22
 	}
 
 	if t.Destination == nil {
