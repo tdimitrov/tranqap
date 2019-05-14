@@ -43,3 +43,5 @@ What rpcap does:
 [Documentation](https://rpcap.readthedocs.io)
 
 [Downloads](https://github.com/tdimitrov/rpcap/releases)
+
+[Short demo on YouTube](https://youtu.be/wNBYIQlzUnQ)
