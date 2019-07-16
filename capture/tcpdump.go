@@ -54,7 +54,7 @@ type FilterConfig struct {
 // NewTcpdump creates Tcpdump Capturer
 func NewTcpdump(name string, outer *output.MultiOutput, subsc CapturerEventChan, trans captureTransport, sudo SudoConfig, filter FilterConfig) Capturer {
 	const sudoCmd = "sudo -n "
-	const captureCmd = "tcpdump -U -s0 -w - 'not port %d'"
+	const captureCmd = "tcpdump -U -s0 -i any -w - 'not port %d'"
 	const dropPriviledges = " -Z "
 	const runInBackground = " & "
 
