@@ -9,7 +9,7 @@ import (
 	"io"
 	"testing"
 
-	"github.com/tdimitrov/rpcap/output"
+	"github.com/tdimitrov/tranqap/output"
 )
 
 type outputMock struct {

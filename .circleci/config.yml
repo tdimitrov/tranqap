@@ -7,7 +7,7 @@ jobs:
     docker:
       - image: circleci/golang:1.11
 
-    working_directory: /go/src/github.com/tdimitrov/rpcap
+    working_directory: /go/src/github.com/tdimitrov/tranqap
     steps:
       - checkout
       - run:

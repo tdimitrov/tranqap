@@ -17,7 +17,7 @@ func init() {
 }
 
 func getTmpDir() string {
-	baseDir := "/tmp/rpcap-tests"
+	baseDir := "/tmp/tranqap-tests"
 
 	for i := 0; i < 10; i++ {
 		id := rand.Uint32()

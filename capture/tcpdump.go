@@ -9,8 +9,8 @@ import (
 	"io"
 	"strings"
 
-	"github.com/tdimitrov/rpcap/output"
-	"github.com/tdimitrov/rpcap/rplog"
+	"github.com/tdimitrov/tranqap/output"
+	"github.com/tdimitrov/tranqap/rplog"
 )
 
 type captureTransport interface {
@@ -55,7 +55,7 @@ type FilterConfig struct {
 func NewTcpdump(name string, outer *output.MultiOutput, subsc CapturerEventChan, trans captureTransport, sudo SudoConfig, filter FilterConfig) Capturer {
 	const sudoCmd = "sudo -n "
 	const captureCmd = "tcpdump -U -s0 -i any -w - 'not port %d'"
-	const dropPriviledges = " -Z "
+	const dropPrivileges = " -Z "
 	const runInBackground = " & "
 
 	var cmd strings.Builder
@@ -64,7 +64,7 @@ func NewTcpdump(name string, outer *output.MultiOutput, subsc CapturerEventChan,
 	}
 	cmd.WriteString(captureCmd)
 	if sudo.Use == true {
-		cmd.WriteString(dropPriviledges)
+		cmd.WriteString(dropPrivileges)
 		cmd.WriteString(*sudo.Username)
 	}
 	cmd.WriteString(runInBackground)

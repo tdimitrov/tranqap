@@ -9,7 +9,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/tdimitrov/rpcap/rplog"
+	"github.com/tdimitrov/tranqap/rplog"
 )
 
 // pidPrefix is the string, which is put in front of the PID, when it is transmitted over stderr
@@ -19,9 +19,9 @@ const pidPrefix = "MY_PID_IS:"
 // 1. Saves the PID of the last command executed in a Bash variable. This is supposed to be the capture command
 // 2. Echoes the PID to stderr, so that it can be saved by the Capturer. Stderr is used, because PCAP data is
 //		transmitted over stdout
-// 3. Waits the PID to finish, so that the session remains active until stop command is sent from rpcap shell
+// 3. Waits the PID to finish, so that the session remains active until stop command is sent from tranqap shell
 func cmdGetPid() string {
-	return "RPCAP_MY_PID=$! ; echo " + pidPrefix + " $RPCAP_MY_PID >&2 ; wait $RPCAP_MY_PID"
+	return "TRANQAP_MY_PID=$! ; echo " + pidPrefix + " $TRANQAP_MY_PID >&2 ; wait $TRANQAP_MY_PID"
 }
 
 // stdErrHandler parses PID of the Capturer from stderr and saves all stderr messages in a string slice

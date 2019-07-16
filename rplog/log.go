@@ -20,7 +20,7 @@ type LogFile struct {
 	logger *log.Logger
 }
 
-var rpcapLog *LogFile
+var tranqapLog *LogFile
 var printFeedback FeedbackFn
 
 // Init bootstraps the logger. printShell effectively is the ishell instance.
@@ -31,7 +31,7 @@ func Init(fname string, feedbackFn func(string, ...interface{})) error {
 		if err != nil {
 			return fmt.Errorf("Error opening log file %s: %s", fname, err)
 		}
-		rpcapLog = &LogFile{f, log.New(f, "", log.LstdFlags)}
+		tranqapLog = &LogFile{f, log.New(f, "", log.LstdFlags)}
 	}
 
 	printFeedback = feedbackFn
@@ -63,20 +63,20 @@ func (l *LogFile) logInfo(format string, a ...interface{}) {
 
 // Error logs with prefix ERROR in file and stdout
 func Error(format string, a ...interface{}) {
-	if rpcapLog == nil {
+	if tranqapLog == nil {
 		return
 	}
 
-	rpcapLog.logError(format, a...)
+	tranqapLog.logError(format, a...)
 }
 
 // Info logs only in file
 func Info(format string, a ...interface{}) {
-	if rpcapLog == nil {
+	if tranqapLog == nil {
 		return
 	}
 
-	rpcapLog.logInfo(format, a...)
+	tranqapLog.logInfo(format, a...)
 }
 
 // Feedback prints on the shell
@@ -88,9 +88,9 @@ func Feedback(format string, a ...interface{}) {
 
 // Close the log file
 func Close() {
-	if rpcapLog == nil {
+	if tranqapLog == nil {
 		return
 	}
 
-	rpcapLog.file.Close()
+	tranqapLog.file.Close()
 }

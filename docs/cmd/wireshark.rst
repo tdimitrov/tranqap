@@ -10,4 +10,4 @@ E.g.
 
 ::
 
-    rpcap> wireshark MyServer
+    tranqap> wireshark MyServer

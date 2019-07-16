@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/tdimitrov/rpcap/output"
-	"github.com/tdimitrov/rpcap/rplog"
+	"github.com/tdimitrov/tranqap/output"
+	"github.com/tdimitrov/tranqap/rplog"
 )
 
 // Storage is a thread safe container for Capturers.

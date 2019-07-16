@@ -5,7 +5,7 @@
 package capture
 
 import (
-	"github.com/tdimitrov/rpcap/output"
+	"github.com/tdimitrov/tranqap/output"
 )
 
 const (

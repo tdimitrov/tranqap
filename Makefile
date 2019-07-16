@@ -1,12 +1,12 @@
-BINARY_NAME=rpcap
+BINARY_NAME=tranqap
 
 all: build test
 
 build:
-	go build -o $(BINARY_NAME) ./cmd/rpcap
+	go build -o $(BINARY_NAME) ./cmd/tranqap
 
 install:
-	go install ./cmd/rpcap
+	go install ./cmd/tranqap
 
 test:
 	go test -cover ./...
@@ -15,7 +15,7 @@ cyclo:
 	gocyclo . capture output rplog
 
 clean:
-	@rm rpcap || true
+	@rm tranqap || true
 
 dep:
 	go get golang.org/x/crypto/ssh

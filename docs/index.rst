@@ -1,9 +1,9 @@
-.. rpcap documentation master file, created by
+.. tranqap documentation master file, created by
    sphinx-quickstart on Sun Apr  7 22:13:44 2019.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to rpcap's documentation!
+Welcome to tranqap's documentation!
 =================================
 
 .. toctree::
@@ -16,13 +16,13 @@ Welcome to rpcap's documentation!
    cmd
    cmd/index
 
-What is rpcap
+What is tranqap
 =============
 
     Remote network packet capturing tool which automates the generation
     of PCAP files from one or more remote machines.
 
-rpcap automates things like logging on the remote machine, executing a
+tranqap automates things like logging on the remote machine, executing a
 packet capturer (tcpdump), transferring the PCAP file to the local
 machine and executing a graphical tool (Wireshark), which displays the
 traffic in real time.
@@ -60,20 +60,20 @@ on one machine tcpdump can be run as regular user, on another it
 requires sudo, etc. So it is hard to run multiple captures on machines,
 requiring different authentication/permissions.
 
-What is rpcap and how it solves the problem
+What is tranqap and how it solves the problem
 -------------------------------------------
 
-rpcap is the bash script above on a very strong steroids. It's main
+tranqap is the bash script above on a very strong steroids. It's main
 purpose is to implement the functionality of the script in more
-intelligent and robust way. But in the same time rpcap should be as lean
+intelligent and robust way. But in the same time tranqap should be as lean
 and simple as possible.
 
-rpcap is driven by three main principles: 1. Minimal dependencies and
+tranqap is driven by three main principles: 1. Minimal dependencies and
 requirements for the target machine(s). 2. Do not take over the role of
 another tool(s), just glue them together. 3. Be simple, minimalistic and
 user friendly.
 
-What rpcap does: 1. Reads a list of remote targets and configuration
+What tranqap does: 1. Reads a list of remote targets and configuration
 parameters from a JSON file. Each config file represents an
 environment/project/task. 2. A connection to each target is established
 over SSH. 3. A capturer (e.g. tcpdump) is run on each target. 4. The

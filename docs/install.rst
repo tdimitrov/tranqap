@@ -9,7 +9,7 @@ Binary installation
 -------------------
 
 For each release rpm and deb packages are provided. Head to
-`releases <https://github.com/tdimitrov/rpcap/releases>`__ tab of the
+`releases <https://github.com/tdimitrov/tranqap/releases>`__ tab of the
 project and download the package for your distribution.
 
 Currently there are two options:
@@ -24,7 +24,7 @@ Ubuntu - latest standard and latest LTS releases.
 Installation from source
 ------------------------
 
-rpcap is written in Go, so the Go distribution should be installed.
+tranqap is written in Go, so the Go distribution should be installed.
 Instructions for the installation can be found
 `here <https://golang.org/doc/install>`__.
 
@@ -32,8 +32,8 @@ After that:
 
 .. code:: bash
 
-    go get  github.com/tdimitrov/rpcap
-    go install  github.com/tdimitrov/rpcap
+    go get  github.com/tdimitrov/tranqap
+    go install  github.com/tdimitrov/tranqap
 
-At this point rpcap should be installer in ``$GOPATH/bin``. This path
+At this point tranqap should be installer in ``$GOPATH/bin``. This path
 should be added to system path.

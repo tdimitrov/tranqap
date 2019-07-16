@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'rpcap'
+project = 'tranqap'
 copyright = '2019, Tsvetomir Dimitrov'
 author = 'Tsvetomir Dimitrov'
 master_doc = 'index'

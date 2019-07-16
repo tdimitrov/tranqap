@@ -10,7 +10,7 @@ import (
 	"io"
 	"os/exec"
 
-	"github.com/tdimitrov/rpcap/rplog"
+	"github.com/tdimitrov/tranqap/rplog"
 )
 
 type wsharkOutput struct {

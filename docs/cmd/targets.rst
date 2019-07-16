@@ -14,7 +14,7 @@ provided about each line:
 
 ::
 
-    rpcap> targets
+    tranqap> targets
     === Running checks for target <Local target 1> ===
     Check if tcpdump is installed: Yes
     Check if sudo is installed: NO
@@ -25,7 +25,7 @@ provided about each line:
 
 **Check if tcpdump is installed:** Yes/NO.
 
-rpcap uses tcpdump to collect traffic. This check verifies if tcpdump
+tranqap uses tcpdump to collect traffic. This check verifies if tcpdump
 command is available on the target.
 
 **Check if sudo is installed:** Yes/NO
@@ -35,7 +35,7 @@ is with sudo. This check verifies if there is sudo installed on target.
 
 **Check if tcpdump can be run with sudo, without password:** Yes/NO
 
-rpcap can't provide a password for sudo. For this reason if rpcap should
+tranqap can't provide a password for sudo. For this reason if tranqap should
 be started via sudo, it should be configured to execute tcpdump command
 without asking for a password. This line checks if sudo tcpdump requires
 a password.

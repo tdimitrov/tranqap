@@ -7,7 +7,7 @@ package capture
 import (
 	"testing"
 
-	"github.com/tdimitrov/rpcap/output"
+	"github.com/tdimitrov/tranqap/output"
 )
 
 type capturerMock struct {
@@ -85,6 +85,6 @@ func TestStorageStopAll(t *testing.T) {
 	storage.Close()
 
 	if cnt := len(storage.capturers); cnt != 0 {
-		t.Errorf("Error occured during StopAll(). There are still %d capturers in the storage\n", cnt)
+		t.Errorf("Error occurred during StopAll(). There are still %d capturers in the storage\n", cnt)
 	}
 }

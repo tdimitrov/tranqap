@@ -1,12 +1,12 @@
 Binary options
 ==============
 
-This section describes the usage of rpcap command. General usage of the
+This section describes the usage of tranqap command. General usage of the
 binary:
 
 .. code:: shell
 
-    rpcap [global flags] [subcommand [subcommand flags]]
+    tranqap [global flags] [subcommand [subcommand flags]]
 
 Check the following subsections for details.
 
@@ -23,7 +23,7 @@ Path to config file. (default "config.json")
 -l string
 ~~~~~~~~~
 
-Path to log file. rpcap will not generate additional log file, unless
+Path to log file. tranqap will not generate additional log file, unless
 this option is supplied.
 
 -h
@@ -35,7 +35,7 @@ Subcommands
 -----------
 
 Subcommands are limited set of feature which are not suitable for the
-rpcap shell.
+tranqap shell.
 
 init
 ----
@@ -46,6 +46,6 @@ Generates sample configuration file. Can work with -c flag.
 
 .. code:: shell
 
-    $ rpcap -c config.json init
+    $ tranqap -c config.json init
 
 Creates sample config named config.json in current working directory.

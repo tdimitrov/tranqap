@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/tdimitrov/rpcap/rplog"
+	"github.com/tdimitrov/tranqap/rplog"
 )
 
 type fileOutput struct {
