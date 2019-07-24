@@ -44,4 +44,4 @@ What tranqap does:
 
 [Downloads](https://github.com/tdimitrov/tranqap/releases)
 
-[Short demo on YouTube](https://youtu.be/wNBYIQlzUnQ)
+[Short demo on YouTube](https://youtu.be/yNIUNll4SaE)
