@@ -38,7 +38,7 @@ func getSudoConfig(t target) capture.SudoConfig {
 }
 
 func getFilterConfig(t target) capture.FilterConfig {
-	return capture.FilterConfig{t.FilterPort}
+	return capture.FilterConfig{Port: t.FilterPort}
 }
 
 func cmdStart(ctx *ishell.Context, cfg configParams) {
