@@ -11,7 +11,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/tdimitrov/tranqap/rplog"
+	"github.com/tdimitrov/tranqap/tqlog"
 
 	"golang.org/x/crypto/ssh"
 )
@@ -97,7 +97,7 @@ func getClientConfig(t *target) (*ssh.ClientConfig, *string, error) {
 	}
 
 	if t.Port == nil {
-		rplog.Info("Port not set for target <%s>. Setting to 22.\n", *t.Name)
+		tqlog.Info("Port not set for target <%s>. Setting to 22.\n", *t.Name)
 		t.Port = new(int)
 		*t.Port = 22
 	}
@@ -111,7 +111,7 @@ func getClientConfig(t *target) (*ssh.ClientConfig, *string, error) {
 	}
 
 	if t.RotationCnt == nil {
-		rplog.Info("File Rotation Count not set for target <%s>. Setting to 10.\n", *t.Name)
+		tqlog.Info("File Rotation Count not set for target <%s>. Setting to 10.\n", *t.Name)
 		t.RotationCnt = new(int)
 		*t.RotationCnt = 10
 	}
@@ -127,7 +127,7 @@ func getClientConfig(t *target) (*ssh.ClientConfig, *string, error) {
 
 	if t.FilterPort != nil {
 		if *t.FilterPort < 1 || *t.FilterPort > 65535 {
-			return nil, nil, fmt.Errorf("Invalid port number for Filter port parameter: %d. Expected value between 1 and 65535.", *t.FilterPort)
+			return nil, nil, fmt.Errorf("Invalid port number for Filter port parameter: %d. Expected value between 1 and 65535", *t.FilterPort)
 		}
 	}
 

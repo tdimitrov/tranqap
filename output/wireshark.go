@@ -10,7 +10,7 @@ import (
 	"io"
 	"os/exec"
 
-	"github.com/tdimitrov/tranqap/rplog"
+	"github.com/tdimitrov/tranqap/tqlog"
 )
 
 type wsharkOutput struct {
@@ -48,7 +48,7 @@ func (pw wsharkOutput) Write(p []byte) (n int, err error) {
 	n, err = pw.stdin.Write(p)
 	if err != nil {
 		msg := fmt.Sprintf("Error writing: %v", err)
-		rplog.Info(msg)
+		tqlog.Info(msg)
 		return n, errors.New(msg)
 	}
 	return n, nil

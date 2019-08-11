@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/tdimitrov/tranqap/rplog"
+	"github.com/tdimitrov/tranqap/tqlog"
 
 	"github.com/abiosoft/ishell"
 )
@@ -35,7 +35,7 @@ func main() {
 		//subcommand
 		if len(flag.Args()) == 1 && flag.Arg(0) == "init" {
 			//init cmd
-			rplog.Info("Called config command")
+			tqlog.Info("Called config command")
 			err := generateSampleConfig(*configFile)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error generating sample config: %s\n", err.Error())
@@ -65,14 +65,14 @@ func main() {
 
 	// Create logger
 	printCb := func(f string, a ...interface{}) { shell.Printf(f, a...) }
-	if err := rplog.Init(*logFile, printCb); err != nil {
+	if err := tqlog.Init(*logFile, printCb); err != nil {
 		fmt.Printf("Error initialising logger: %s\nLog file won't be generated", err)
 	}
 
 	// Initialise capturers storage
 	initStorage()
 
-	rplog.Info("Program started.")
+	tqlog.Info("Program started.")
 
 	shell.Interrupt(func(c *ishell.Context, count int, input string) {
 		c.Stop()
@@ -104,5 +104,5 @@ func main() {
 
 	shell.Run()
 	capturers.Close()
-	rplog.Close()
+	tqlog.Close()
 }

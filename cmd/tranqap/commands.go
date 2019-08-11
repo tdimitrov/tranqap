@@ -8,7 +8,7 @@ import (
 	"github.com/abiosoft/ishell"
 	"github.com/tdimitrov/tranqap/capture"
 	"github.com/tdimitrov/tranqap/output"
-	"github.com/tdimitrov/tranqap/rplog"
+	"github.com/tdimitrov/tranqap/tqlog"
 )
 
 const (
@@ -48,7 +48,7 @@ func cmdStart(ctx *ishell.Context, cfg configParams) {
 		return
 	}
 
-	rplog.Info("Called start command")
+	tqlog.Info("Called start command")
 
 	for _, t := range cfg.Targets {
 		c, d, err := getClientConfig(&t)
@@ -99,13 +99,13 @@ func cmdStop(ctx *ishell.Context) {
 		return
 	}
 
-	rplog.Info("Called stop command")
+	tqlog.Info("Called stop command")
 
 	capturers.StopAll()
 }
 
 func cmdWireshark(ctx *ishell.Context) {
-	rplog.Info("Called wireshark command with args %v", ctx.Args)
+	tqlog.Info("Called wireshark command with args %v", ctx.Args)
 
 	// Prepare a factory function, which creates Wireshark Outputer
 	factFn := func(p output.MOEventChan) output.Outputer {
@@ -116,7 +116,7 @@ func cmdWireshark(ctx *ishell.Context) {
 }
 
 func cmdTargets(ctx *ishell.Context, cfg configParams) {
-	rplog.Info("Called targets command")
+	tqlog.Info("Called targets command")
 
 	for _, t := range cfg.Targets {
 		c, d, err := getClientConfig(&t)

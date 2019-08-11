@@ -8,7 +8,7 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/tdimitrov/tranqap/rplog"
+	"github.com/tdimitrov/tranqap/tqlog"
 )
 
 // PCAP header is a struct like this:
@@ -156,7 +156,7 @@ func (mo *MultiOutput) eventHandler() {
 		for i, c := range mo.members {
 			if c == event.from {
 				mo.members = append(mo.members[:i], mo.members[i+1:]...)
-				rplog.Info("Outputer stopped.")
+				tqlog.Info("Outputer stopped.")
 				mo.wg.Done()
 				break
 			}

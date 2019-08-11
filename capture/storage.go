@@ -9,7 +9,7 @@ import (
 	"sync"
 
 	"github.com/tdimitrov/tranqap/output"
-	"github.com/tdimitrov/tranqap/rplog"
+	"github.com/tdimitrov/tranqap/tqlog"
 )
 
 // Storage is a thread safe container for Capturers.
@@ -61,18 +61,18 @@ func (c *Storage) Add(newCapt Capturer) error {
 func (c *Storage) StopAll() {
 	if c == nil {
 		//Can be called on a nil pointer
-		rplog.Info("capture.Storage: StopAll() called on a nil instance")
+		tqlog.Info("capture.Storage: StopAll() called on a nil instance")
 		return
 	}
 
-	rplog.Info("capture.Storage: Calling Stop for each capturer")
+	tqlog.Info("capture.Storage: Calling Stop for each capturer")
 
 	c.mut.Lock()
 	for _, c := range c.capturers {
 		if err := c.Stop(); err != nil {
 			errMsg := fmt.Sprintf("Can't stop %s. %s", c.Name(), err)
-			rplog.Error(errMsg)
-			rplog.Feedback(errMsg)
+			tqlog.Error(errMsg)
+			tqlog.Feedback(errMsg)
 		}
 	}
 	c.mut.Unlock()
@@ -81,7 +81,7 @@ func (c *Storage) StopAll() {
 
 // Close terminates the event handler routine
 func (c *Storage) Close() {
-	rplog.Info("Terminating storage")
+	tqlog.Info("Terminating storage")
 	c.StopAll()
 
 	c.wg.Wait()
@@ -89,7 +89,7 @@ func (c *Storage) Close() {
 
 	<-c.handlerFinished
 
-	rplog.Info("Storage terminated")
+	tqlog.Info("Storage terminated")
 }
 
 // AddNewOutput adds new Outputer to each capturer.
@@ -108,8 +108,8 @@ func (c *Storage) AddNewOutput(factFn output.OutputerFactory, targets []string) 
 
 		//Check if there are running captureres
 		if len(c.capturers) == 0 {
-			rplog.Error("wireshark called without arguments, but no capturers are running.")
-			rplog.Feedback("There are no running capturers. Use start first.\n")
+			tqlog.Error("wireshark called without arguments, but no capturers are running.")
+			tqlog.Feedback("There are no running capturers. Use start first.\n")
 			return
 		}
 
@@ -117,7 +117,7 @@ func (c *Storage) AddNewOutput(factFn output.OutputerFactory, targets []string) 
 		for _, capt := range c.capturers {
 			err := capt.AddOutputer(factFn)
 			if err != nil {
-				rplog.Error("Error adding Outputer to capturer %s", capt.Name())
+				tqlog.Error("Error adding Outputer to capturer %s", capt.Name())
 			}
 		}
 	} else {
@@ -126,12 +126,12 @@ func (c *Storage) AddNewOutput(factFn output.OutputerFactory, targets []string) 
 			if capt, ok := c.capturers[t]; ok {
 				err := capt.AddOutputer(factFn)
 				if err != nil {
-					rplog.Error("Error adding Outputer to capturer %s", capt.Name())
+					tqlog.Error("Error adding Outputer to capturer %s", capt.Name())
 				}
 			} else {
 				errMsg := fmt.Sprintf("Target <%s> doesn't exist.\n", t)
-				rplog.Feedback(errMsg)
-				rplog.Error(errMsg)
+				tqlog.Feedback(errMsg)
+				tqlog.Error(errMsg)
 			}
 		}
 	}
@@ -148,15 +148,15 @@ func (c *Storage) Empty() bool {
 func (c *Storage) eventHandler() {
 	defer func() { c.handlerFinished <- struct{}{} }()
 
-	rplog.Info("capture.Storage: Starting eventHandler main loop")
+	tqlog.Info("capture.Storage: Starting eventHandler main loop")
 	for e := range c.events {
-		rplog.Info("Storage: got an event from %s", e.from)
+		tqlog.Info("Storage: got an event from %s", e.from)
 		c.mut.Lock()
 		delete(c.capturers, e.from)
-		rplog.Info("Storage: Removed %s", e.from)
+		tqlog.Info("Storage: Removed %s", e.from)
 		c.wg.Done()
 		c.mut.Unlock()
 	}
 
-	rplog.Info("capture.Storage: All capturers are stopped. Exited from eventHandler main loop")
+	tqlog.Info("capture.Storage: All capturers are stopped. Exited from eventHandler main loop")
 }

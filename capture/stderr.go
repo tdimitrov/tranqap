@@ -9,7 +9,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/tdimitrov/tranqap/rplog"
+	"github.com/tdimitrov/tranqap/tqlog"
 )
 
 // pidPrefix is the string, which is put in front of the PID, when it is transmitted over stderr
@@ -50,7 +50,7 @@ func (pw stdErrHandler) Write(p []byte) (n int, err error) {
 		data := strings.Replace(data, pidPrefix, "", 1)
 		pid, err := strconv.Atoi(strings.Trim(data, "\n\t "))
 		if err != nil {
-			rplog.Info("Expected PID, received: ", data)
+			tqlog.Info("Expected PID, received: ", data)
 			pid = -1
 		}
 		pw.pidLock.Lock()

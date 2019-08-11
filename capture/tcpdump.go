@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/tdimitrov/tranqap/output"
-	"github.com/tdimitrov/tranqap/rplog"
+	"github.com/tdimitrov/tranqap/tqlog"
 )
 
 type captureTransport interface {
@@ -95,7 +95,7 @@ func (capt *Tcpdump) Start() error {
 
 	go capt.startSession()
 
-	rplog.Info("Connected to %s and started a session.", capt.Name())
+	tqlog.Info("Connected to %s and started a session.", capt.Name())
 
 	return nil
 }
@@ -120,7 +120,7 @@ func (capt *Tcpdump) Stop() error {
 		return fmt.Errorf("Error running kill command: %s", err)
 	}
 
-	rplog.Info("Kill executed successfully for %s", capt.Name())
+	tqlog.Info("Kill executed successfully for %s", capt.Name())
 	return nil
 }
 
@@ -142,7 +142,7 @@ func (capt *Tcpdump) startSession() {
 	}
 
 	if port == nil {
-		rplog.Error("Session error for %s. Can't get remote port from transport.", capt.Name())
+		tqlog.Error("Session error for %s. Can't get remote port from transport.", capt.Name())
 		capt.onDie <- CapturerEvent{capt.Name(), CapturerDead}
 		return
 	}
@@ -151,7 +151,7 @@ func (capt *Tcpdump) startSession() {
 	// Run capturer
 	err = capt.trans.Run(cmd, capt.out, capt.pid)
 	if err != nil {
-		rplog.Error("Session error for %s. Can't run tcpdump command: %s", capt.Name(), err)
+		tqlog.Error("Session error for %s. Can't run tcpdump command: %s", capt.Name(), err)
 		capt.onDie <- CapturerEvent{capt.Name(), CapturerDead}
 		return
 	}
@@ -159,11 +159,11 @@ func (capt *Tcpdump) startSession() {
 	if capt.pid.GetPid() != -1 {
 		// PID is not cleared - this is unexpected stop
 		capt.onDie <- CapturerEvent{capt.Name(), CapturerDead}
-		rplog.Error("Session error for %s. Process died unexpectedly. Dumping stderr:\n%s",
+		tqlog.Error("Session error for %s. Process died unexpectedly. Dumping stderr:\n%s",
 			capt.Name(), capt.pid.DumpStdErr())
-		rplog.Feedback("Capturer %s died. stderr:\n%s", capt.Name(), capt.pid.DumpStdErr())
+		tqlog.Feedback("Capturer %s died. stderr:\n%s", capt.Name(), capt.pid.DumpStdErr())
 	} else {
-		rplog.Info("Session info for %s: process killed by command", capt.Name())
+		tqlog.Info("Session info for %s: process killed by command", capt.Name())
 		capt.onDie <- CapturerEvent{capt.Name(), CapturerStopped}
 	}
 

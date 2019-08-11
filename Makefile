@@ -12,7 +12,7 @@ test:
 	go test -cover ./...
 
 cyclo:
-	gocyclo . capture output rplog
+	gocyclo . capture output tqlog
 
 clean:
 	@rm tranqap || true

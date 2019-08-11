@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/tdimitrov/tranqap/rplog"
+	"github.com/tdimitrov/tranqap/tqlog"
 )
 
 type fileOutput struct {
@@ -33,7 +33,7 @@ func (pw fileOutput) Write(p []byte) (n int, err error) {
 	n, err = pw.fd.Write(p)
 	if err != nil {
 		msg := fmt.Sprintf("Error writing to file: %v", err)
-		rplog.Info(msg)
+		tqlog.Info(msg)
 		return n, errors.New(msg)
 	}
 	return n, nil
@@ -56,7 +56,7 @@ func openFile(destDir string, filePattern string, rotationCnt int) (*os.File, er
 	if !fileExists(filePath) {
 		fd, err := os.OpenFile(filePath, os.O_CREATE|os.O_WRONLY, 0755)
 		if err != nil {
-			rplog.Error("Error opening file: %s", err)
+			tqlog.Error("Error opening file: %s", err)
 			return nil, err
 		}
 		return fd, err
@@ -71,7 +71,7 @@ func openFile(destDir string, filePattern string, rotationCnt int) (*os.File, er
 	if fileExists(lastFile) {
 		err := os.Remove(lastFile)
 		if err != nil {
-			rplog.Error("Error removing %v during file rotation: %v\n", lastFile, err)
+			tqlog.Error("Error removing %v during file rotation: %v\n", lastFile, err)
 			return nil, err
 		}
 	}
@@ -83,7 +83,7 @@ func openFile(destDir string, filePattern string, rotationCnt int) (*os.File, er
 			new := basename + "." + strconv.Itoa(n) + ext
 			err := os.Rename(old, new)
 			if err != nil {
-				rplog.Error("Error rotating %v to %v: %v\n", old, new, err)
+				tqlog.Error("Error rotating %v to %v: %v\n", old, new, err)
 				continue
 			}
 		}
@@ -94,14 +94,14 @@ func openFile(destDir string, filePattern string, rotationCnt int) (*os.File, er
 		newName := basename + "." + strconv.Itoa(1) + ext
 		err := os.Rename(filePath, newName)
 		if err != nil {
-			rplog.Error("Error rotating %v to %v: %v\n", filePath, newName, err)
+			tqlog.Error("Error rotating %v to %v: %v\n", filePath, newName, err)
 		}
 	}
 
 	// And finally create the new file
 	fd, err := os.OpenFile(filePath, os.O_CREATE|os.O_WRONLY, 0755)
 	if err != nil {
-		rplog.Error("Error creating file: %s", err)
+		tqlog.Error("Error creating file: %s", err)
 		return nil, err
 	}
 
