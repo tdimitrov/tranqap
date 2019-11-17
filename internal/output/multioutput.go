@@ -8,7 +8,7 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/tdimitrov/tranqap/tqlog"
+	"github.com/tdimitrov/tranqap/internal/tqlog"
 )
 
 // PCAP header is a struct like this:

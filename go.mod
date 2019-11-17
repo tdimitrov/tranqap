@@ -1,4 +1,4 @@
-module gitlab.com/petanode/tranqap
+module github.com/tdimitrov/tranqap
 
 go 1.12
 

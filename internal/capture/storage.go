@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/tdimitrov/tranqap/output"
-	"github.com/tdimitrov/tranqap/tqlog"
+	"github.com/tdimitrov/tranqap/internal/output"
+	"github.com/tdimitrov/tranqap/internal/tqlog"
 )
 
 // Storage is a thread safe container for Capturers.

@@ -7,7 +7,7 @@ package capture
 import (
 	"testing"
 
-	"github.com/tdimitrov/tranqap/output"
+	"github.com/tdimitrov/tranqap/internal/output"
 )
 
 type capturerMock struct {

@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/tdimitrov/tranqap/tqlog"
+	"github.com/tdimitrov/tranqap/internal/tqlog"
 )
 
 type fileOutput struct {

@@ -11,7 +11,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/tdimitrov/tranqap/tqlog"
+	"github.com/tdimitrov/tranqap/internal/tqlog"
 
 	"golang.org/x/crypto/ssh"
 )

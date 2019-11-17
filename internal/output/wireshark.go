@@ -10,7 +10,7 @@ import (
 	"io"
 	"os/exec"
 
-	"github.com/tdimitrov/tranqap/tqlog"
+	"github.com/tdimitrov/tranqap/internal/tqlog"
 )
 
 type wsharkOutput struct {

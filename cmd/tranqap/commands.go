@@ -6,9 +6,9 @@ package main
 
 import (
 	"github.com/abiosoft/ishell"
-	"github.com/tdimitrov/tranqap/capture"
-	"github.com/tdimitrov/tranqap/output"
-	"github.com/tdimitrov/tranqap/tqlog"
+	"github.com/tdimitrov/tranqap/internal/capture"
+	"github.com/tdimitrov/tranqap/internal/output"
+	"github.com/tdimitrov/tranqap/internal/tqlog"
 )
 
 const (

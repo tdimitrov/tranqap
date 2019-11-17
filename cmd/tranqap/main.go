@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/tdimitrov/tranqap/tqlog"
+	"github.com/tdimitrov/tranqap/internal/tqlog"
 
 	"github.com/abiosoft/ishell"
 )

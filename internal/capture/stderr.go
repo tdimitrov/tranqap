@@ -9,7 +9,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/tdimitrov/tranqap/tqlog"
+	"github.com/tdimitrov/tranqap/internal/tqlog"
 )
 
 // pidPrefix is the string, which is put in front of the PID, when it is transmitted over stderr

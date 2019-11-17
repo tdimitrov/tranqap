@@ -9,8 +9,8 @@ import (
 	"io"
 	"strings"
 
-	"github.com/tdimitrov/tranqap/output"
-	"github.com/tdimitrov/tranqap/tqlog"
+	"github.com/tdimitrov/tranqap/internal/output"
+	"github.com/tdimitrov/tranqap/internal/tqlog"
 )
 
 type captureTransport interface {
