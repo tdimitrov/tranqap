@@ -16,7 +16,3 @@ cyclo:
 
 clean:
 	@rm tranqap || true
-
-dep:
-	go get golang.org/x/crypto/ssh
-	go get github.com/abiosoft/ishell
