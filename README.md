@@ -1,6 +1,4 @@
 # tranqap
-[![CircleCI](https://circleci.com/gh/tdimitrov/tranqap/tree/master.svg?style=svg)](https://circleci.com/gh/tdimitrov/tranqap/tree/master)
-[![Documentation Status](https://readthedocs.org/projects/tranqap/badge/?version=latest)](https://tranqap.readthedocs.io/en/latest/?badge=latest)
 
 Remote network packet capturing tool which automates the generation of PCAP files from one or more remote machines.
 
