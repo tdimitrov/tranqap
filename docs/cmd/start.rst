@@ -18,13 +18,13 @@ FILE\_PATTERN.1.pcap.
 
 Here is an example :
 
-.. code:: json
+.. code:: yaml
 
-    {
-        "Destination": "PCAPs/local_target_1",
-        "File Pattern": "trace",
-        "File Rotation Count": 5,
-    }
+    targets:
+      - name: "Local taget"
+      destination: "PCAPs/local_target_1"
+      file_pattern: "trace"
+      file_rotation_count: 5
 
 With this configuration the PCAP files will be saved in a location,
 relative to the current working directory of the binary -

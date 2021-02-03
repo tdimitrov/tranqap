@@ -30,7 +30,7 @@ tranqap is driven by three main principles:
 3. Be simple, minimalistic and user friendly.
 
 What tranqap does:
-1. Reads a list of remote targets and configuration parameters from a JSON file. Each config file represents an environment/project/task.
+1. Reads a list of remote targets and configuration parameters from a YAML file. Each config file represents an environment/project/task.
 2. A connection to each target is established over SSH.
 3. A capturer (e.g. tcpdump) is run on each target.
 4. The resulting PCAP file is saved locally on disk and optionally it can be watched in real time with GUI packet analyser (e.g. wireshark).

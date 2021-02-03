@@ -1,0 +1,22 @@
+targets:
+  - name: "Local target 1"
+    host: "127.0.0.1"
+    port: 2222
+    user: "root"
+    key: "ssh-key"
+    destination: "PCAPs/local_target_1"
+    file_pattern: "trace"
+    file_rotation_count: 10
+    use_sudo: false
+    filter_port: 22
+
+  - name: "Local target 2"
+    host: "127.0.0.1"
+    port: 2223
+    user: "root"
+    key: "ssh-key"
+    destination: "PCAPs/local_target_2"
+    file_pattern: "trace"
+    file_rotation_count: 10
+    use_sudo: false
+    filter_port: 22

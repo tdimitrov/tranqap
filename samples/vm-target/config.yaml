@@ -1,0 +1,20 @@
+targets:
+- name: "alpha"
+  host: "127.0.0.1"
+  port: 4841
+  user: "vagrant"
+  key: ".vagrant/machines/alpha/virtualbox/private_key"
+  destination: "pcaps/"
+  file_pattern: "alpha"
+  file_rotation_count: 3
+  use_sudo: true
+  
+- name: "beta"
+  host: "127.0.0.1"
+  port: 4842
+  user: "vagrant"
+  key: ".vagrant/machines/beta/virtualbox/private_key"
+  destination: "pcaps/"
+  file_pattern: "beta"
+  file_rotation_count: 3
+  use_sudo: true

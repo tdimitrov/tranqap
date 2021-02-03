@@ -1,5 +1,5 @@
 #Copy-pasted from https://docs.docker.com/engine/examples/running_ssh_service/#build-an-eg_sshd-image
-FROM ubuntu:16.04
+FROM ubuntu:20.04
 
 RUN apt-get update && apt-get install -y openssh-server tcpdump
 RUN mkdir /var/run/sshd

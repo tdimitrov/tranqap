@@ -18,7 +18,7 @@ The supported global flags are:
 -c string
 ~~~~~~~~~
 
-Path to config file. (default "config.json")
+Path to config file. (default "config.yaml")
 
 -l string
 ~~~~~~~~~
@@ -46,6 +46,6 @@ Generates sample configuration file. Can work with -c flag.
 
 .. code:: shell
 
-    $ tranqap -c config.json init
+    $ tranqap -c config.yaml init
 
-Creates sample config named config.json in current working directory.
+Creates sample config named config.yaml in current working directory.

@@ -2,10 +2,10 @@
 Configuration file
 ==================
 
-tranqap looks for a file named **json.config** in the current working directory. As the name suggests, it's a JSON
+tranqap looks for a file named **config.yaml** in the current working directory. As the name suggests, it's a YAML
 formatted file, which contains an array of targets. The general structure is like this:
 
-.. code:: json
+.. code:: yaml
 
     {
         "targets" : [

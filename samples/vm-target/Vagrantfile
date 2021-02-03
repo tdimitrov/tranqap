@@ -11,7 +11,7 @@ Vagrant.configure("2") do |config|
     alpha.vm.provider "virtualbox" do |v|
       v.customize [ "modifyvm", :id, "--uartmode1", "disconnected" ]
     end
-    alpha.vm.box = "ubuntu/xenial64"
+    alpha.vm.box = "bento/ubuntu-20.04"
     alpha.vm.network "forwarded_port", guest: 22, host: 4841
     alpha.vm.hostname = "alpha"
     alpha.vm.provision "shell", inline: $script
@@ -21,7 +21,7 @@ Vagrant.configure("2") do |config|
     beta.vm.provider "virtualbox" do |v|
       v.customize [ "modifyvm", :id, "--uartmode1", "disconnected" ]
     end
-    beta.vm.box = "ubuntu/xenial64"
+    beta.vm.box = "bento/ubuntu-20.04"
     beta.vm.network "forwarded_port", guest: 22, host: 4842
     beta.vm.hostname = "beta"
     beta.vm.provision "shell", inline: $script

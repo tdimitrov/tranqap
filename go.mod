@@ -13,4 +13,5 @@ require (
 	github.com/mattn/go-isatty v0.0.10 // indirect
 	github.com/stretchr/testify v1.4.0 // indirect
 	golang.org/x/crypto v0.0.0-20191117063200-497ca9f6d64f
+	gopkg.in/yaml.v2 v2.2.2
 )

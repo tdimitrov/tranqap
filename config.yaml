@@ -1,0 +1,12 @@
+targets:
+- name: local
+  host: 127.0.0.1
+  port: 22
+  user: capture
+  key: secret.key
+  destination: pcaps
+  file_pattern: trace
+  file_rotation_count: 5
+  use_sudo: true
+  filter_port: 22
+  

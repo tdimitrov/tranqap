@@ -5,7 +5,6 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -14,6 +13,7 @@ import (
 	"github.com/tdimitrov/tranqap/internal/tqlog"
 
 	"golang.org/x/crypto/ssh"
+	"gopkg.in/yaml.v2"
 )
 
 type configParams struct {
@@ -27,10 +27,10 @@ type target struct {
 	User        *string
 	Key         *string
 	Destination *string
-	FilePattern *string `json:"File Pattern"`
-	RotationCnt *int    `json:"File Rotation Count"`
-	UseSudo     *bool   `json:"Use sudo"`
-	FilterPort  *int    `json:"Filter port"`
+	FilePattern *string `yaml:"file_pattern"`
+	RotationCnt *int    `yaml:"file_rotation_count"`
+	UseSudo     *bool   `yaml:"use_sudo"`
+	FilterPort  *int    `yaml:"filter_port"`
 }
 
 func checkForDuplicates(config configParams) error {
@@ -50,17 +50,26 @@ func checkForDuplicates(config configParams) error {
 }
 
 func readConfigFromFile(fname string) (configParams, error) {
+	confFile, err := ioutil.ReadFile(fname)
+	if err != nil {
+		return configParams{}, fmt.Errorf("%s. Run init subcommand to generate empty config or provide path to existing config with -c", err.Error())
+	}
+
+	conf, err := parseConfig(confFile)
+	if err != nil {
+		return configParams{}, fmt.Errorf("Error parsing %s: %s", fname, err.Error())
+	}
+
+	return conf, nil
+}
+
+func parseConfig(confFile []byte) (configParams, error) {
 	var conf configParams
 	var err error
 
-	confFile, err := ioutil.ReadFile(fname)
+	err = yaml.Unmarshal(confFile, &conf)
 	if err != nil {
-		return conf, fmt.Errorf("%s. Run init subcommand to generate empty config or provide path to existing config with -c", err.Error())
-	}
-
-	err = json.Unmarshal(confFile, &conf)
-	if err != nil {
-		return conf, fmt.Errorf("Error parsing %s: %s", fname, err.Error())
+		return conf, err
 	}
 
 	// Basic validation
@@ -178,12 +187,12 @@ func generateSampleConfig(path string) error {
 	conf["targets"] = t
 
 	// And finally create the new file
-	confJSON, err := json.MarshalIndent(conf, "", "    ")
+	confYAML, err := yaml.Marshal(conf)
 	if err != nil {
 		return fmt.Errorf("Error serializing sample configuration: %s", err)
 	}
 
-	err = ioutil.WriteFile(path, confJSON, 0644)
+	err = ioutil.WriteFile(path, confYAML, 0644)
 	if err != nil {
 		return fmt.Errorf("Error writing sample configuration to file: %s", err)
 	}

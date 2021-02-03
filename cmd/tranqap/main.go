@@ -22,11 +22,11 @@ func main() {
 		flag.PrintDefaults()
 		fmt.Fprintf(os.Stderr, "\nSubcommands:\n")
 		fmt.Fprintf(os.Stderr, "init - creates sample configuration file. Works with -c.\n")
-		fmt.Fprintf(os.Stderr, "\tE.g. \"%s -c config.json init\" - ", os.Args[0])
-		fmt.Fprintf(os.Stderr, "creates sample config named config.json in current working directory.\n")
+		fmt.Fprintf(os.Stderr, "\tE.g. \"%s -c config.yaml init\" - ", os.Args[0])
+		fmt.Fprintf(os.Stderr, "creates sample config named config.yaml in current working directory.\n")
 	}
 
-	var configFile = flag.String("c", "config.json", "config file to use")
+	var configFile = flag.String("c", "config.yaml", "config file to use")
 	var logFile = flag.String("l", "", "path to log file")
 
 	flag.Parse()
