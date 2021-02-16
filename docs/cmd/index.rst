@@ -1,5 +1,5 @@
-Shell commands
-==============
+Tranqap shell commands
+======================
 
 .. include:: targets.rst
 .. include:: start.rst

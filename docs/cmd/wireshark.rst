@@ -1,6 +1,8 @@
 wireshark
 ---------
 
+wireshark accepts an optional argument:
+
     wireshark [target]
 
 When called without arguments, starts Wireshark for all running

@@ -80,8 +80,6 @@ collect network traffic without root.
     Check if tcpdump has got cap_net_raw+eip capabilities: NO
     User is member of the binary's group: Yes
 
-    tranqap>
-
 What this means:
 
 -  tcpdump is installed on the remote machine. This is the packet
@@ -105,10 +103,9 @@ Just run start:
 .. code:: shell
 
     tranqap> start
-    tranqap>
 
-Nothing happens but you should see a PCAP file is created in the output
-directory, which is PCAPs/local\_target\_1:
+Nothing is displayed but you should see a PCAP file is created in the 
+output directory, which is PCAPs/local\_target\_1:
 
 .. code:: shell
 
@@ -124,7 +121,6 @@ real time with wireshark:
 .. code:: shell
 
     tranqap> wireshark
-    tranqap>
 
 Wireshark should be started locally and all the traffic will be shown
 there.
@@ -137,4 +133,3 @@ Run stop:
 .. code:: shell
 
     tranqap> stop
-    tranqap>

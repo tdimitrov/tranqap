@@ -32,8 +32,8 @@ After that:
 
 .. code:: bash
 
-    go get  github.com/tdimitrov/tranqap
-    go install  github.com/tdimitrov/tranqap
+    go get github.com/tdimitrov/tranqap
+    go install github.com/tdimitrov/tranqap
 
 At this point tranqap should be installer in ``$GOPATH/bin``. This path
 should be added to system path.

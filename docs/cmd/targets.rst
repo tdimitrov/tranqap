@@ -1,16 +1,14 @@
 targets
 -------
 
-    targets
-
 This command has got two main purposes:
 
 -  To list all targets in the configuration file.
--  To check if PCAP files can be collected there.
+-  To check if PCAP files can be collected from these targets.
 
 Here is a sample output from the command. It is similar to the one in
-`Quick start <quickstart.md>`__ section, but here more details will be
-provided about each line:
+:doc:`../quickstart` section, but here more details will be provided 
+about each line:
 
 ::
 
@@ -52,3 +50,6 @@ when the binary has got cap\_net\_admin and cap\_net\_raw+eip
 capabilities enabled. Additionally the user, executing tcpdump, should
 either be owner of the binary or be member of the owner group. As the
 owner of tcpdump is usually root, the second condition is checked.
+
+If the above doesn't make much sense please refer to this article from 
+the `Wireshark documentation <https://wiki.wireshark.org/CaptureSetup/CapturePrivileges>`_.

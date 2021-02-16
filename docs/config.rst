@@ -7,15 +7,12 @@ formatted file, which contains an array of targets. The general structure is lik
 
 .. code:: yaml
 
-    {
-        "targets" : [
-            {
-            }
-        ]
-    }
+    targets:
+        - name: Target_1
+        - name: Target_2
+        - name: Target_N
 
 For each target a set of mandatory and optional parameters can be set. 
-
 
 Mandatory parameters
 --------------------
@@ -42,7 +39,9 @@ Optional parameters
 
 **Use sudo** - true or false. Whether capturer should be invoked with or without sudo. Default value: false.
 
-**Filter port** - If the target is behind NAT or there is a port redirection, the port used for connection might 
-differ from the actual port, on which SSH service listens. In that case tranqap will set wrong capture filter for 
-tcpdump and the traffic for the SSH session will not be excluded in the capture. This option allows the default 
-filter port to be overridden. If not set, **Port** value will be used for the filter. Default value: unset.
+**Filter port** - Tranqap doesn't include the traffic from the SSH session used to connect to the remote machine. 
+The reason is to avoid bloating the PCAP file with irrelevant traffic. However if the target is behind NAT or 
+there is a port redirection, the port used for connection might differ from the actual port, on which SSH service 
+listens. In that case tranqap will set wrong capture filter for tcpdump and the traffic from the SSH session will 
+not be excluded from the capture. This option allows the default filter port to be overridden. If not set, **Port** 
+value will be used for the filter. Default value: unset.

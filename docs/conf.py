@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'tranqap'
-copyright = '2019, Tsvetomir Dimitrov'
+copyright = '2021, Tsvetomir Dimitrov'
 author = 'Tsvetomir Dimitrov'
 master_doc = 'index'
 
